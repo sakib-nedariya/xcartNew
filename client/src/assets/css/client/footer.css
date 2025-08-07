@@ -1,0 +1,111 @@
+.container-fluid.footer {
+  background: linear-gradient(
+    90deg,
+    rgba(11, 11, 11, 1) 75%,
+    rgba(56, 54, 56, 1) 98%
+  );
+}
+.footer-main-div {
+  display: flex;
+  justify-content: space-between;
+}
+.footer-feedback-content-box {
+  background-color: #17181c;
+  width: 36%;
+  padding: 3%;
+  border-radius: 16px;
+  font-family: var(--secondary-font);
+}
+.footer-feedback-content-box:nth-child(1),
+.footer-info-about-content h6 {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--primary-font);
+  color: var(--primary-btn-bg);
+}
+.footer-feedback-content-box h3 {
+  color: var(--white-color);
+  padding: 20px 0;
+}
+.footer-feedback-content-box h3 span {
+  color: var(--light-black-color);
+}
+.footer-feedback-content-box .input-container {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--light-black-color);
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+}
+.footer-feedback-content-box .input-container label {
+  color: var(--light-black-color);
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+.footer-feedback-content-box .input-container input {
+  background-color: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white-color);
+  outline: none;
+}
+.footer-request-btn {
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 12px 26px;
+  margin: 15px 0 80px 0;
+}
+.privacy-button a {
+  color: var(--light-black-color);
+}
+.footer-info-about-content {
+  display: grid;
+  row-gap: 60px;
+  column-gap: 30px;
+  grid-template-columns: repeat(2, 1fr);
+}
+.footer-info-about-content h6 {
+  margin-bottom: 8%;
+}
+.footer-menu ul li {
+  color: var(--white-color);
+  font-family: var(--secondary-font);
+  font-size: 15px;
+  line-height: 1.8em;
+  font-weight: 600;
+}
+.footer-info-about-content .about_us ul li:hover,
+.footer-info-about-content .info ul li:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+.footer-middle-info-socialmedia-link {
+  width: 30%;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+}
+.footer-company-logo {
+  width: 10%;
+}
+.footer-company-logo img {
+  margin-top: 50px;
+  width: 100%;
+}
+.social-media-links {
+  color: var(--white-color);
+  display: flex;
+  gap: 20px;
+  font-size: 10px;
+}
+.social-media-links svg {
+  height: 28px;
+  width: 28px;
+}
+.social-media-links svg:hover{
+  cursor: pointer;
+  color: var(--light-black-color);
+  transition: 0.1s ease-in;
+}

@@ -1,0 +1,92 @@
+.user_account_details_content {
+  display: flex;
+  padding: 20px;
+  font-family: var(--info-font);
+}
+.user-profile-image-wrapper {
+  position: relative;
+  height: 140px;
+  width: 171px;
+  margin-right: 25px;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 50%;
+}
+.user_account_details_content .user-profile-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.user-profile-image-wrapper .user-profile-image-wrapper-upload-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.user-profile-image-wrapper:hover .user-profile-image-wrapper-upload-overlay {
+  opacity: 1;
+}
+.user-profile-image-wrapper-upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--white-color);
+  font-size: 13px;
+  font-weight: 500;
+  gap: 6px;
+}
+.user_profile_form,
+.user_account_details_content .form-group {
+  width: 100%;
+}
+.user_account_details_content .flex {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.user_account_details_content label {
+  font-family: var(--info-font);
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+.user_account_details_content input,
+.user_account_details_content select {
+  font-family: var(--secondary-font);
+  width: 100%;
+  margin-top: 5px;
+  padding: 12px;
+  border-radius: 3px;
+  border: 1px solid var(--primary-border-color);
+}
+.user_account_details_content input:focus,
+.user_account_details_content select:focus {
+  outline: 1px solid var(--primary-btn-bg);
+}
+.user-save-changes-btn {
+  font-weight: 500;
+  font-size: 14px;
+  padding: 14px 30px;
+  border-radius: 10px;
+  margin-top: 8px;
+}
+.user-profile-details-inner .user-password {
+  position: relative;
+}
+.user-profile-details-inner .user-password svg {
+  position: absolute;
+  top: 53%;
+  right: 1.4%;
+  color: var(--gray-light-text-color);
+  cursor: pointer;
+  font-size: 20px;
+}

@@ -1,0 +1,130 @@
+.userdashboard_content_grid {
+  display: grid;
+  font-family: var(--secondary-font);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.userdashboard_content_card {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background: var(--white-color);
+}
+.userdashboard_content_card:nth-child(1) {
+  background: #eaf6fe;
+}
+.userdashboard_content_card:nth-child(2) {
+  background: #fff3eb;
+}
+.userdashboard_content_card:nth-child(3) {
+  background: #eaf7e9;
+}
+.userdashboard_content_card .icon-box img {
+  width: 32px;
+  height: 32px;
+}
+.userdashboard_content_card .icon-box {
+  background: var(--white-color);
+  padding: 8px 11px;
+  margin-right: 15px;
+}
+.userdashboard_content_card .text-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: -webkit-fill-available;
+}
+.dashboard_inner_content_number {
+  font-size: 18px;
+  font-weight: 600;
+}
+.dashboard_inner_content_label {
+  color: #475156;
+  font-size: 14px;
+  font-family: var(--info-font);
+}
+
+.userdashboard_user_details {
+  width: 50%;
+  padding: 30px 0 35px 0;
+}
+.userdashboard_user_details h5 {
+  font-family: var(--info-font);
+  font-size: 22px;
+  font-weight: 500;
+  padding-bottom: 12px;
+}
+.userdashboard_user_details p {
+  font-family: var(--info-font);
+  line-height: 1.6em;
+  color: #475156;
+}
+.userdashboard_user_details p span {
+  color: #2da5f3;
+}
+.account-info-and-billing-address {
+  display: flex;
+  gap: 20px;
+}
+.account-info-container {
+  width: 40%;
+  background-color: var(--white-color);
+  border: 1px solid var(--primary-border-color);
+  border-radius: 4px;
+  height: fit-content;
+}
+.account-info-container .user_details_content {
+  padding: 20px;
+}
+.account-info-container h6 {
+  padding: 20px;
+  font-size: 15px;
+  border-bottom: 1px solid var(--primary-border-color);
+  text-transform: uppercase;
+}
+.account-info-and-billing-address .user_details_content img {
+  height: 52px;
+  width: 52px;
+  margin-right: 15px;
+  border-radius: 50%;
+}
+.user_details_content .user-details h5,
+.user_billing_name h5 {
+  font-size: 17px;
+  font-weight: 500;
+  font-family: var(--info-font);
+}
+.user_details_content .user-details p {
+  font-family: var(--info-font);
+  color: var(--gray-light-text-color);
+}
+.user_email_and_mobile_no {
+  padding: 20px 0;
+}
+.user_email_and_mobile_no p {
+  font-family: var(--info-font);
+  line-height: 1.9em;
+}
+.user_email_and_mobile_no span {
+  color: var(--gray-light-text-color);
+  margin-left: 5px;
+}
+.user_details_content .user-profile-edit-btn {
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 12px;
+  background-color: transparent;
+  color: var(--primary-btn-bg);
+  border: 2px solid var(--primary-btn-bg);
+}
+.user_details_content .user-profile-edit-btn:hover {
+  color: var(--white-color);
+  background-color: var(--primary-btn-bg);
+  border: 2px solid var(--primary-btn-bg);
+}
+.user-billing-address {
+  color: var(--gray-light-text-color);
+  line-height:1.4em !important;
+  padding-bottom: 4px;
+}

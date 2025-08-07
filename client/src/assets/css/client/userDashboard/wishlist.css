@@ -1,0 +1,78 @@
+.userdashboard_main_content_div h6 {
+  padding: 16px 20px;
+  font-size: 19px;
+  font-family: var(--info-font);
+}
+
+.userdashboard_main_content_div table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--info-font);
+}
+.userdashboard_main_content_div thead th {
+  text-align: left;
+  font-size: 14px;
+  color: var(--light-gray-color);
+  font-weight: 500;
+  padding: 10px 0 10px 16px;
+  border-top: 1px solid var(--primary-border-color);
+  border-bottom: 1px solid var(--primary-border-color);
+  background: var(--light-white-color);
+}
+.userdashboard_main_content_div thead th:last-child {
+  padding: 10px 16px 10px 0;
+}
+.userdashboard_inner_content_div {
+  display: flex;
+  align-items: center;
+}
+.userdashboard_inner_content_div img {
+  max-width: 70px;
+  height: 70px;
+  object-fit: contain;
+  margin-right: 8px;
+}
+.userdashboard_main_content_div tbody td {
+  padding: 12px 0 12px 16px;
+  background-color: var(--white-color);
+}
+.userdashboard_main_content_div tbody td:last-child {
+  padding: 12px 16px 12px 0;
+}
+.userdashboard_inner_content_div .product-old-price {
+  text-decoration: line-through;
+  color: var(--light-gray-color);
+  font-size: 14px;
+  margin-right: 5px;
+}
+.userdashboard_inner_content_div .product-new-price {
+  font-size: 14px;
+}
+.userdashboard_main_content_div tbody tr {
+  border-bottom: 1px solid var(--primary-border-color);
+}
+.userdashboard_main_content_div .product-in-stock {
+  font-weight: 600;
+  font-size: 14px;
+  color: #25b800;
+}
+.userdashboard_main_content_div .product-out-of-stock {
+  font-weight: 600;
+  font-size: 14px;
+  color: #ff4343;
+}
+.userdashboard_main_content_div .wishlist_add_to_cart_btn {
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 10px 25px;
+}
+.userdashboard_main_content_div .product-remove-btn svg {
+  font-size: 20px;
+  margin-top: 4px;
+  cursor: pointer;
+  color: var(--light-gray-color);
+}
+.userdashboard_main_content_div .product-remove-btn svg:hover {
+  cursor: pointer;
+  color: rgb(245, 6, 6);
+}

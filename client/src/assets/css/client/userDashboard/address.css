@@ -1,0 +1,72 @@
+.userdashboard_main_content_div_address {
+  padding: 20px;
+  background-color: var(--white-color);
+  border: 1px solid var(--primary-border-color);
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+.userdashboard_main_content_div_address svg {
+  color: #adb7bc;
+}
+.userdashboard_main_content_div_address .address-input {
+  width: 100%;
+  padding: 15px;
+  font-size: 16px;
+  outline: none;
+  border: 2px solid var(--primary-border-color);
+  color: var(--black-color);
+  font-weight: 500;
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-family: var(--info-font);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.address-input span {
+  padding: 0;
+  font-size: 15px;
+}
+.userdashboard_main_content_div_address .flex {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+.userdashboard_main_content_div_address .address-form .form-group {
+  width: 100%;
+  margin-top: 18px;
+}
+.address-form .form-group span {
+  color: var(--light-gray-color);
+}
+.userdashboard_main_content_div_address label {
+  font-family: var(--info-font);
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+.userdashboard_main_content_div_address select:focus,
+.address-form .form-group input:focus {
+  outline: 1px solid var(--primary-btn-bg);
+}
+.userdashboard_main_content_div_address select,
+.address-form .form-group input {
+  font-family: var(--secondary-font);
+  width: 100%;
+  margin-top: 6px;
+  padding: 12px;
+  border-radius: 3px;
+  border: 1px solid var(--primary-border-color);
+}
+.address-form .form-group input {
+  padding: 13px;
+}
+.userdashboard_main_content_div_address button {
+  width: 100%;
+  font-weight: 600;
+  padding: 14px 0;
+  margin-top: 20px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  font-family: var(--info-font);
+  letter-spacing: 0.5px;
+}

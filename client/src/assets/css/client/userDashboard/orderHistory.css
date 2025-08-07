@@ -1,0 +1,27 @@
+.order-history-date,
+.order-history-price,
+.order-history-product-name {
+  font-size: 14px;
+}
+
+.order-history-date {
+  color: var(--light-gray-color);
+}
+
+.order-history-view-btn {
+  font-family: var(--info-font);
+  color: var(--primary-btn-bg);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.order-history-view {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.order-history-view svg {
+  cursor: pointer;
+  color: var(--primary-btn-bg);
+}

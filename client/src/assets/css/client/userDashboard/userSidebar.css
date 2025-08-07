@@ -1,0 +1,30 @@
+.user_sidebar_main {
+  width: 23%;
+  height: fit-content;
+  background-color: var(--white-color);
+  border-radius: 4px;
+  border: 1px solid var(--primary-border-color);
+}
+.user_sidebar_main ul {
+  padding: 5px 0;
+}
+.user_sidebar_main a {
+  display: flex;
+  font-size: 15px;
+  align-items: center;
+  padding: 14px 20px;
+  font-family: var(--info-font);
+  color: var(--light-gray-color);
+}
+.user_sidebar_main li svg {
+  font-size: 22px;
+  margin-right: 12px;
+}
+.user_sidebar_main ul li a:hover{
+  color: var(--primary-btn-bg);
+  background-color: var(--sidebar-bg-color);
+}
+.user_sidebar_main ul li a.active{
+  color: var(--white-color);
+  background-color: var(--primary-btn-bg);
+}

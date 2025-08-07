@@ -1,0 +1,128 @@
+.container-fluid.checkout-section {
+  background-color: var(--light-white-color);
+  font-family: var(--info-font);
+}
+.checkout-section .checkout-main-div {
+  display: flex;
+  justify-content: space-between;
+}
+.checkout-section .checkout-container {
+  width: 63%;
+}
+.checkout-section .checkout-container h6 {
+  font-family: var(--info-font);
+  font-size: 18px;
+  margin-bottom: 25px;
+}
+.checkout-container-order-price-summery {
+  width: 35%;
+}
+.checkout-form-container-group {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 15px;
+}
+.checkout-label-title {
+  font-size: 14px;
+}
+.checkout-form-container-group input,
+.checkout-form-container-group select,
+.checkout-section-additional-information textarea {
+  display: block;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  color: var(--light-black-color);
+  padding: 14px 16px;
+  border-radius: 4px;
+  border: 1px solid var(--primary-border-color);
+  margin-top: 7px;
+}
+.checkout-form-container-group input::placeholder,
+.checkout-form-container-group select::placeholder,
+.checkout-section-additional-information textarea::placeholder {
+  color: var(--placeholder-color);
+}
+.checkout-form-container-group select {
+  padding: 14px 5px !important;
+}
+.checkout-section-shipping-option {
+  font-size: 15px;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  margin: 20px 0 40px 0;
+}
+.checkout-section-shipping-option input {
+  height: 16px;
+  width: 16px;
+  margin-right: 8px;
+}
+.checkout-container .shopping-cart-price-card h6 {
+  border-bottom: 1px solid var(--primary-border-color);
+  padding-bottom: 14px;
+}
+.checkout-section-payment-options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.checkout-section-payment-options .option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 15px 50px;
+}
+.checkout-section-payment-options .option p {
+  font-family: var(--info-font);
+  margin: 12px 0;
+  font-weight: 500;
+  font-size: 14px;
+}
+.checkout-section-payment-options .option input {
+  height: 18px;
+  width: 18px;
+}
+.checkout-section-payment-options .option:nth-child(2) {
+  border-left: 1px solid var(--primary-border-color);
+  border-right: 1px solid var(--primary-border-color);
+}
+.checkout-section-additional-information h6 {
+  margin: 40px 0;
+}
+.checkout-section-additional-information textarea {
+  border: 2px solid var(--primary-border-color);
+  font-family: var(--info-font);
+  min-height: 120px;
+  resize: vertical;
+}
+.checkout-container-order-price-summery .shopping-cartcheckout-btn {
+  margin: 15px 0 0 0;
+}
+.order-summery-product {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.order-summery-product img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-right: 15px;
+}
+.order-summery-product-details p {
+  font-family: var(--info-font);
+}
+.order-summery-product-price {
+  margin: 8px 0 0;
+}
+.order-summery-product-price span {
+  color: var(--primary-btn-bg);
+  font-weight: 600;
+}
+.order-summery-product-list {
+  max-height: 200px;
+  overflow-y: hidden;
+  margin-bottom: 24px;
+}
