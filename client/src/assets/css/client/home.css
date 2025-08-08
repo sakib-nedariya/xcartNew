@@ -273,7 +273,7 @@
   transform: translateY(-5px);
 }
 
-.product-category-image-with-price .heart-icon {
+.product-category-image-with-price .heart-icon, .product-items .heart-icon {
   position: absolute;
   top: 12px;
   right: 12px;
