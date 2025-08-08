@@ -234,7 +234,7 @@ const Product = () => {
                       src={`/upload/${getFirstImage(product.image)}`}
                       alt="product_image"
                     />
-                    <span>{product.slogan}</span>
+                    <span className="text_ellipsis">{product.slogan}</span>
                   </td>
                   <td>
                     {brandData.find((b) => b.id === product.brand_id)?.name ??

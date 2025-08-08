@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link, NavLink, useParams } from "react-router-dom";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { IoMdArrowDropright } from "react-icons/io";
 import { IoArrowBackSharp } from "react-icons/io5";
 import default_profile from "../../../assets/image/default_profile.png";
@@ -29,6 +28,7 @@ const ViewBrand = () => {
     try {
       const res = await axios.get(`${port}getbranddatawithid/${id}`);
       const fetchedData = res.data[0];
+      console.log(fetchedData);
       setBrandData({
         ...fetchedData,
       });

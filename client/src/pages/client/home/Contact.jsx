@@ -1,4 +1,3 @@
-import React from "react";
 import NewsLetterBG from "../../../assets/image/news-bg-image.png"
 
 const Contact = () => {

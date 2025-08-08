@@ -88,7 +88,7 @@ const DashboardRoute = () => {
         <Route path="/admin/view-user/:id" element={<ViewUsers />} />
 
         <Route path="/admin/inquiry" element={<Inquiry />} />
-        <Route path="/admin/inquiry/view-inquiry" element={<ViewInquiry />} />
+        <Route path="/admin/view-inquiry/:id" element={<ViewInquiry />} />
       </Routes>
     </>
   );

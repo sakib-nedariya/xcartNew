@@ -7,6 +7,8 @@ import "../../../assets/css/main.css";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../../Components/Pagination";
 import noProductFoundImage from "../../../assets/image/no-product-found.png";
+import { useWishlist } from "../../../context/WishlistContext";
+import { IoMdHeartEmpty, IoMdHeart } from "react-icons/io";
 
 const port = import.meta.env.VITE_SERVER_URL;
 
@@ -25,6 +27,8 @@ const ProductListing = () => {
   const [selectedPriceRange, setSelectedPriceRange] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("popular");
+
+  const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist();
 
   const navigate = useNavigate();
   const itemsPerPage = 16;
@@ -170,6 +174,15 @@ const ProductListing = () => {
     navigate(`/product/${productId}`);
   };
 
+
+  // wishlist 
+
+   const toggleWishlist = (product) => {
+    isWishlisted(product.id)
+      ? removeFromWishlist(product.id)
+      : addToWishlist(product);
+  };
+
   return (
     <>
       <Navbar />
@@ -309,6 +322,23 @@ const ProductListing = () => {
                     onClick={() => handleProductClick(product.id)}
                   >
                     <div className="product-img">
+                    <div
+                    className="heart-icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleWishlist(product)
+                    }}
+            
+                    style={{
+                      color: isWishlisted(product.id) ? "blue" : "#bbb",
+                    }}
+                  >
+                    {isWishlisted(product.id) ? (
+                      <IoMdHeart />
+                    ) : (
+                      <IoMdHeartEmpty />
+                    )}
+                  </div>
                       <img
                         src={`/upload/${getFirstImage(product.image)}`}
                         alt="product_image"

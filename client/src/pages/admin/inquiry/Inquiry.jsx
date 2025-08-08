@@ -4,12 +4,29 @@ import Breadcrumb from "../layout/Breadcrumb";
 import { IoIosEye } from "react-icons/io";
 import { MdDeleteForever } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+const port = import.meta.env.VITE_SERVER_URL;
 
 const Inquiry = () => {
-
+  const [inquiries, setInquiries] = useState([]);
   const navigate = useNavigate();
-  const handleNavigateView = () => {
-    navigate(`/admin/inquiry/view-inquiry`);
+
+  useEffect(() => {
+    const getInquiries = async () => {
+      try {
+        const res = await axios.get(`${port}getinquirydata`);
+        setInquiries(res.data);
+      } catch (error) {
+        console.error("Error fetching inquiries:", error);
+      }
+    };
+    getInquiries();
+  }, []);
+
+  const handleNavigateView = (id) => {
+    navigate(`/admin/view-inquiry/${id}`);
   };
 
   return (
@@ -36,26 +53,29 @@ const Inquiry = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>
-                  <input
-                    type="checkbox"
-                    style={{ width: "16px", height: "16px" }}
-                  />
-                </td>
-                <td style={{ color: "black" }}>Sakib Nedariya</td>
-                <td style={{ textTransform: "lowercase" }}>
-                  sakibnedariya@gmail.com
-                </td>
-                <td>9875463210</td>
-                <td className="inquiry-message">
-                  This is the inquiry for damage products delivered from xcart.
-                </td>
-                <td className="actions">
-                  <IoIosEye title="View" onClick={handleNavigateView} />
-                  <MdDeleteForever title="Delete" />
-                </td>
-              </tr>
+              {inquiries.map((inq) => (
+                <tr key={inq.id}>
+                  <td>
+                    <input
+                      type="checkbox"
+                      style={{ width: "16px", height: "16px" }}
+                    />
+                  </td>
+                  <td style={{ color: "black" }}>
+                    {inq.first_name}&nbsp;{inq.last_name}
+                  </td>
+                  <td style={{ textTransform: "lowercase" }}>{inq.email}</td>
+                  <td>{inq.mobile_number}</td>
+                  <td className="inquiry-message">{inq.message}</td>
+                  <td className="actions">
+                    <IoIosEye
+                      title="View"
+                      onClick={() => handleNavigateView(inq.id)}
+                    />
+                    <MdDeleteForever title="Delete" />
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
