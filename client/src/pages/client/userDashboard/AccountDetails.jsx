@@ -38,7 +38,6 @@ const AccountDetails = () => {
     username: "",
     email: "",
     mobile_number: "",
-    address: "",
     country: selectedCountry,
     state: selectedState,
     city: selectedCity,
@@ -153,7 +152,6 @@ const AccountDetails = () => {
     formData.append("username", userData.username);
     formData.append("email", userData.email);
     formData.append("mobile_number", userData.mobile_number);
-    formData.append("address", userData.address);
     formData.append("country", selectedCountry || userData.country);
     formData.append("state", selectedState || userData.state);
     formData.append("city", selectedCity || userData.city);
@@ -263,18 +261,7 @@ const AccountDetails = () => {
                       />
                     </div>
                   </div>
-                  <div className="user-profile-details-inner flex">
-                    <div className="form-group">
-                      <label>Address</label>
-                      <input
-                        type="text"
-                        name="address"
-                        value={userData.address}
-                        onChange={handleChangeInput}
-                        placeholder="flat/Buildin No/street address/village"
-                      />
-                    </div>
-                  </div>
+ 
                   <div className="user-profile-details-inner flex">
                     <div className="form-group">
                       <label>Mobile Number</label>

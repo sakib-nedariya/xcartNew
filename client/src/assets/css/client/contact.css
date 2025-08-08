@@ -117,7 +117,7 @@
 }
 
 .contact-container .contact-form textarea {
-  resize: vertical;
+  resize: none;
   margin-bottom: 30px;
   height: 130px;
 }
