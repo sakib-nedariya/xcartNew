@@ -6,7 +6,7 @@ import "../../../assets/css/client/userDashboard/dashboard.css";
 import rocketImage from "../../../assets/image/Rocket.png";
 import receiptImage from "../../../assets/image/Receipt.png";
 import packageImage from "../../../assets/image/Package.png";
-import profile from "../../../assets/image/dash-profile.png";
+import profile from "../../../assets/image/default_profile.png";
 import Footer from "../layout/Footer";
 import { useEffect } from "react";
 import axios from "axios";

@@ -11,8 +11,11 @@
   color: var(--black-color);
 }
 
-.admin-panel-header-div .dashboard-table-container .product-info span {
-  width: 350px;
+.admin-panel-header-div
+  .dashboard-table-container
+  .product-info
+  .text_ellipsis {
+  width: 300px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

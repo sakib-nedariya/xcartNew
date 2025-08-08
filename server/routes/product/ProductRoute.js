@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Product = require("../../controller/product/Product");
-const upload = require("../../middleware/multer"); // update this to export .array
+const upload = require("../../middleware/multer");
 
 router.route("/getproductdata").get(Product.getProductData);
 router.route("/getproductdatawithid/:id").get(Product.getProductDataWithId);

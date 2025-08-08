@@ -4,8 +4,6 @@ import "../../../assets/css/client/checkout.css";
 import CODImage from "../../../assets/image/CashOnDelivery.png";
 import Razorpay from "../../../assets/image/razorpay.png";
 import MyWallet from "../../../assets/image/MyWallet.png";
-import selecteTV from "../../../assets/image/TV.png";
-import selecteHeadphone from "../../../assets/image/headphone.png";
 import Navbar from "../layout/Navbar";
 import Footer from "../layout/Footer";
 import { useCart } from "../../../context/CartContext";
@@ -68,7 +66,7 @@ const Checkout = () => {
       <section className="container-fluid checkout-section">
         <div className="container padding-main checkout-main-div">
           <div className="checkout-container">
-            <h6>Billing Information</h6>
+            <h6>Shipping Information</h6>
             <form className="checkout-section-form-container">
               <div className="checkout-form-container-group">
                 <div style={{ width: "25%" }}>
