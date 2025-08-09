@@ -609,3 +609,24 @@ button {
   border: 2px solid var(--white-color);
   border-radius: 50%;
 }
+
+
+
+
+.dashboard-nav-notification-bell {
+  position: relative;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -2px;
+  right: 12px;
+  background-color: var(--primary-btn-bg);
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 50%;
+  font-weight: bold;
+}

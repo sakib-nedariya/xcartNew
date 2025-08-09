@@ -67,14 +67,12 @@ const Users = () => {
       <main className="admin-panel-header-div">
         <Breadcrumb title="Users" breadcrumbText="User List" />
 
-        <div className="admin-panel-header-tabs">
+         <div className="admin-panel-header-tabs">
           {["All", "Active", "Blocked"].map((tab) => (
             <button
               key={tab}
               type="button"
-              className={`admin-panel-header-tab ${
-                activeTab === tab ? "active" : ""
-              }`}
+              className={`admin-panel-header-tab ${activeTab === tab ? "active" : ""}`}
               onClick={() => setActiveTab(tab)}
             >
               {tab}
