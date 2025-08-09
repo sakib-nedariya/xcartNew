@@ -86,7 +86,7 @@ const AccountDetails = () => {
     }
   }, [selectedState]);
 
-  // password change function
+  
   const handleChangePassword = async (e) => {
     e.preventDefault();
 

@@ -9,6 +9,7 @@ import Navbar from "../layout/Navbar";
 import axios from "axios";
 import { RxCross2 } from "react-icons/rx";
 import { notifyWarning, notifySuccess } from "../layout/ToastMessage";
+
 const port = import.meta.env.VITE_SERVER_URL;
 
 const EditProduct = () => {
@@ -16,7 +17,8 @@ const EditProduct = () => {
   const navigate = useNavigate();
   const [brandData, setBrandData] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]); // { file, preview }
+  const [draggedIndex, setDraggedIndex] = useState(null);
   const [productData, setProductData] = useState({
     brand_id: "",
     cate_id: "",
@@ -66,6 +68,36 @@ const EditProduct = () => {
     } catch (err) {}
   };
 
+  // Combine both existing and new images for unified drag
+  const allImages = [
+    ...productData.existingImages.map((img) => ({ type: "existing", data: img })),
+    ...selectedFiles.map((file) => ({ type: "new", data: file })),
+  ];
+
+  const handleDrop = (dropIndex) => {
+    if (draggedIndex === null || draggedIndex === dropIndex) return;
+
+    const updatedList = [...allImages];
+    const [draggedItem] = updatedList.splice(draggedIndex, 1);
+    updatedList.splice(dropIndex, 0, draggedItem);
+
+    // Separate back into existing and new files
+    const updatedExisting = updatedList
+      .filter((i) => i.type === "existing")
+      .map((i) => i.data);
+    const updatedNew = updatedList
+      .filter((i) => i.type === "new")
+      .map((i) => i.data);
+
+    setProductData((prev) => ({
+      ...prev,
+      existingImages: updatedExisting,
+    }));
+    setSelectedFiles(updatedNew);
+
+    setDraggedIndex(null);
+  };
+
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
     setProductData((p) => ({ ...p, [name]: value }));
@@ -80,15 +112,18 @@ const EditProduct = () => {
     setSelectedFiles((prev) => [...prev, ...previews]);
   };
 
-  const removeSelectedImage = (idx) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== idx));
-  };
-
-  const removeExistingImage = (idx) => {
-    setProductData((p) => ({
-      ...p,
-      existingImages: p.existingImages.filter((_, i) => i !== idx),
-    }));
+  const removeImage = (index) => {
+    const item = allImages[index];
+    if (item.type === "existing") {
+      setProductData((p) => ({
+        ...p,
+        existingImages: p.existingImages.filter((_, i) => i !== index),
+      }));
+    } else {
+      const existingCount = productData.existingImages.length;
+      const newIndex = index - existingCount;
+      setSelectedFiles((prev) => prev.filter((_, i) => i !== newIndex));
+    }
   };
 
   const saveProductData = async (e) => {
@@ -111,7 +146,7 @@ const EditProduct = () => {
       "existingImages",
       JSON.stringify(productData.existingImages)
     );
-    selectedFiles.forEach((f) => formData.append("images", f.file)); // use "images" key
+    selectedFiles.forEach((f) => formData.append("images", f.file));
 
     try {
       await axios.put(`${port}editproductdata/${id}`, formData, {
@@ -132,7 +167,10 @@ const EditProduct = () => {
       <Sidebar />
       <Navbar />
       <main className="admin-panel-header-div">
-        <div className="admin-dashboard-main-header" style={{ marginBottom: "24px" }}>
+        <div
+          className="admin-dashboard-main-header"
+          style={{ marginBottom: "24px" }}
+        >
           <div>
             <h5>Edit Product</h5>
             <div className="admin-panel-breadcrumb">
@@ -148,7 +186,10 @@ const EditProduct = () => {
             </div>
           </div>
           <div className="admin-panel-header-add-buttons">
-            <NavLink to="/admin/product" className="cancel-btn dashboard-add-product-btn">
+            <NavLink
+              to="/admin/product"
+              className="cancel-btn dashboard-add-product-btn"
+            >
               <HiXMark /> Cancel
             </NavLink>
             <button
@@ -167,11 +208,25 @@ const EditProduct = () => {
               <h6>General Information</h6>
               <div className="add-product-form-container">
                 <label>Product Name</label>
-                <input type="text" name="name" value={productData.name} onChange={handleChangeInput} />
+                <input
+                  type="text"
+                  name="name"
+                  value={productData.name}
+                  onChange={handleChangeInput}
+                />
                 <label>Slogan</label>
-                <input type="text" name="slogan" value={productData.slogan} onChange={handleChangeInput} />
+                <input
+                  type="text"
+                  name="slogan"
+                  value={productData.slogan}
+                  onChange={handleChangeInput}
+                />
                 <label>Description</label>
-                <textarea name="description" value={productData.description} onChange={handleChangeInput} />
+                <textarea
+                  name="description"
+                  value={productData.description}
+                  onChange={handleChangeInput}
+                />
               </div>
             </div>
 
@@ -181,19 +236,31 @@ const EditProduct = () => {
                 <label htmlFor="imageInputFile">Photo</label>
                 <div className="add-product-upload-container">
                   <div className="add-product-upload-icon preview-grid">
-                    {productData.existingImages.map((img, index) => (
-                      <div key={`existing-${index}`} className="image-preview-wrapper">
-                        <img src={`/upload/${img}`} alt={`Existing ${index}`} className="image-preview" />
-                        <RxCross2 className="remove-preview-button" onClick={() => removeExistingImage(index)} />
+                    {allImages.map((item, index) => (
+                      <div
+                        key={index}
+                        className="image-preview-wrapper"
+                        draggable
+                        onDragStart={() => setDraggedIndex(index)}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={() => handleDrop(index)}
+                      >
+                        <img
+                          src={
+                            item.type === "existing"
+                              ? `/upload/${item.data}`
+                              : item.data.preview
+                          }
+                          alt={`Preview ${index}`}
+                          className="image-preview"
+                        />
+                        <RxCross2
+                          className="remove-preview-button"
+                          onClick={() => removeImage(index)}
+                        />
                       </div>
                     ))}
-                    {selectedFiles.map((file, index) => (
-                      <div key={`new-${index}`} className="image-preview-wrapper">
-                        <img src={file.preview} alt={`Preview ${index}`} className="image-preview" />
-                        <RxCross2 className="remove-preview-button" onClick={() => removeSelectedImage(index)} />
-                      </div>
-                    ))}
-                    {productData.existingImages.length === 0 && selectedFiles.length === 0 && (
+                    {allImages.length === 0 && (
                       <img
                         src={default_profile}
                         alt="Default Preview"
@@ -202,7 +269,9 @@ const EditProduct = () => {
                       />
                     )}
                   </div>
-                  <p className="add-product-upload-text">Drag and drop image here, or click add image</p>
+                  <p className="add-product-upload-text">
+                    Drag and drop image here, or click add image
+                  </p>
                   <button
                     type="button"
                     className="add-product-upload-btn secondary-btn"
@@ -226,9 +295,19 @@ const EditProduct = () => {
               <h6>Pricing</h6>
               <div className="add-product-form-container">
                 <label>Base Price</label>
-                <input type="text" name="price" value={productData.price} onChange={handleChangeInput} />
+                <input
+                  type="text"
+                  name="price"
+                  value={productData.price}
+                  onChange={handleChangeInput}
+                />
                 <label>Discount (%)</label>
-                <input type="text" name="discount" value={productData.discount} onChange={handleChangeInput} />
+                <input
+                  type="text"
+                  name="discount"
+                  value={productData.discount}
+                  onChange={handleChangeInput}
+                />
               </div>
             </div>
           </div>
@@ -238,7 +317,11 @@ const EditProduct = () => {
               <h6>Brand & Category</h6>
               <div className="add-product-form-container">
                 <label>Select Brand</label>
-                <select name="brand_id" value={productData.brand_id} onChange={handleChangeInput}>
+                <select
+                  name="brand_id"
+                  value={productData.brand_id}
+                  onChange={handleChangeInput}
+                >
                   <option value="">Select Brand</option>
                   {brandData.map((b) => (
                     <option key={b.id} value={b.id}>
@@ -247,7 +330,11 @@ const EditProduct = () => {
                   ))}
                 </select>
                 <label>Select Category</label>
-                <select name="cate_id" value={productData.cate_id} onChange={handleChangeInput}>
+                <select
+                  name="cate_id"
+                  value={productData.cate_id}
+                  onChange={handleChangeInput}
+                >
                   <option value="">Select Category</option>
                   {categoryData.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -262,9 +349,19 @@ const EditProduct = () => {
               <h6>Memory & Storage</h6>
               <div className="add-product-form-container">
                 <label>Memory (RAM)</label>
-                <input type="text" name="memory" value={productData.memory} onChange={handleChangeInput} />
+                <input
+                  type="text"
+                  name="memory"
+                  value={productData.memory}
+                  onChange={handleChangeInput}
+                />
                 <label>Storage</label>
-                <input type="text" name="storage" value={productData.storage} onChange={handleChangeInput} />
+                <input
+                  type="text"
+                  name="storage"
+                  value={productData.storage}
+                  onChange={handleChangeInput}
+                />
               </div>
             </div>
 
@@ -272,7 +369,11 @@ const EditProduct = () => {
               <h6>Status</h6>
               <div className="add-product-form-container">
                 <label>Product Status</label>
-                <select name="status" value={productData.status} onChange={handleChangeInput}>
+                <select
+                  name="status"
+                  value={productData.status}
+                  onChange={handleChangeInput}
+                >
                   <option value="1">Published</option>
                   <option value="2">Low Stock</option>
                   <option value="3">Draft</option>

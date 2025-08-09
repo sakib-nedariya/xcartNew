@@ -10,6 +10,7 @@ import Footer from "../layout/Footer";
 import axios from "axios";
 import { notifyError, notifySuccess } from "../../admin/layout/ToastMessage";
 import { useAuth } from "../../../context/AuthContext";
+const port = import.meta.env.VITE_SERVER_URL;
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -24,10 +25,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:1020/login",
-        formData
-      );
+      const response = await axios.post(`${port}login`, formData);
       localStorage.setItem("id", response.data.user.id);
       login(response.data.token);
       notifySuccess(response.data.message);
