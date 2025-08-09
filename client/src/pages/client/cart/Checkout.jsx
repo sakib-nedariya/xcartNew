@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { Country, State, City } from "country-state-city";
+import { useState } from "react";
 import "../../../assets/css/client/checkout.css";
 import CODImage from "../../../assets/image/CashOnDelivery.png";
 import Razorpay from "../../../assets/image/razorpay.png";
@@ -10,34 +9,9 @@ import { useCart } from "../../../context/CartContext";
 
 const Checkout = () => {
   const [selectedOption, setSelectedOption] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedState, setSelectedState] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
-  const [countries, setCountries] = useState([]);
-  const [states, setStates] = useState([]);
-  const [cities, setCities] = useState([]);
 
   const handleSelection = (option) => setSelectedOption(option);
   const { cartItems } = useCart();
-
-  useEffect(() => {
-    setCountries(Country.getAllCountries());
-  }, []);
-
-  useEffect(() => {
-    if (selectedCountry) {
-      setStates(State.getStatesOfCountry(selectedCountry));
-      setSelectedState("");
-      setSelectedCity("");
-    }
-  }, [selectedCountry]);
-
-  useEffect(() => {
-    if (selectedState && selectedCountry) {
-      setCities(City.getCitiesOfState(selectedCountry, selectedState));
-      setSelectedCity("");
-    }
-  }, [selectedState, selectedCountry]);
 
   const getSubtotal = () => {
     return cartItems.reduce(
@@ -70,7 +44,9 @@ const Checkout = () => {
             <form className="checkout-section-form-container">
               <div className="checkout-form-container-group">
                 <div style={{ width: "25%" }}>
-                  <label className="checkout-label-title">First Name</label>
+                  <label className="checkout-label-title">
+                    First Name <span className="required_field">*</span>
+                  </label>
                   <input
                     type="text"
                     name="firstname"
@@ -78,7 +54,9 @@ const Checkout = () => {
                   />
                 </div>
                 <div style={{ width: "25%" }}>
-                  <label className="checkout-label-title">Last Name</label>
+                  <label className="checkout-label-title">
+                    Last Name <span className="required_field">*</span>
+                  </label>
                   <input type="text" name="lastname" placeholder="Last Name" />
                 </div>
                 <div style={{ width: "50%" }}>
@@ -96,86 +74,71 @@ const Checkout = () => {
 
               <div className="checkout-form-container-group">
                 <div style={{ width: "100%" }}>
-                  <label className="checkout-label-title">Address</label>
-                  <input type="text" name="address" placeholder="" />
+                  <label className="checkout-label-title">
+                    Address <span className="required_field">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="address"
+                    placeholder="flat / street address / village"
+                  />
                 </div>
               </div>
 
               <div className="checkout-form-container-group">
                 <div style={{ width: "25%" }}>
-                  <label className="checkout-label-title">Country</label>
-                  <select
-                    name="country"
-                    value={selectedCountry}
-                    onChange={(e) => setSelectedCountry(e.target.value)}
-                  >
-                    <option value="" disabled>
-                      Select Country...
-                    </option>
-                    {countries.map((country) => (
-                      <option key={country.isoCode} value={country.isoCode}>
-                        {country.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div style={{ width: "25%" }}>
-                  <label className="checkout-label-title">Region/State</label>
-                  <select
-                    name="state"
-                    value={selectedState}
-                    onChange={(e) => setSelectedState(e.target.value)}
-                    disabled={!selectedCountry}
-                  >
-                    <option value="" disabled>
-                      Select State...
-                    </option>
-                    {states.map((state) => (
-                      <option key={state.isoCode} value={state.isoCode}>
-                        {state.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div style={{ width: "25%" }}>
-                  <label className="checkout-label-title">City</label>
-                  <select
-                    name="city"
-                    value={selectedCity}
-                    onChange={(e) => setSelectedCity(e.target.value)}
-                    disabled={!selectedState}
-                  >
-                    <option value="" disabled>
-                      Select City...
-                    </option>
-                    {cities.map((city) => (
-                      <option key={city.name} value={city.name}>
-                        {city.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div style={{ width: "25%" }}>
-                  <label className="checkout-label-title">Zip Code</label>
+                  <label className="checkout-label-title">
+                    Country <span className="required_field">*</span>
+                  </label>
                   <input
                     type="text"
-                    name="zipcode"
-                    placeholder="Enter Zip Code"
+                    name="country"
+                    placeholder="Enter country"
+                  />
+                </div>
+
+                <div style={{ width: "25%" }}>
+                  <label className="checkout-label-title">
+                    State <span className="required_field">*</span>
+                  </label>
+                  <input type="text" name="state" placeholder="Enter state" />
+                </div>
+
+                <div style={{ width: "25%" }}>
+                  <label className="checkout-label-title">
+                    City <span className="required_field">*</span>
+                  </label>
+                  <input type="text" name="city" placeholder="Enter city" />
+                </div>
+
+                <div style={{ width: "25%" }}>
+                  <label className="checkout-label-title">
+                    Pincode <span className="required_field">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="pincode"
+                    placeholder="Enter pincode"
                   />
                 </div>
               </div>
 
               <div className="checkout-form-container-group">
                 <div style={{ width: "50%" }}>
-                  <label className="checkout-label-title">Email</label>
-                  <input type="text" name="email" placeholder="" />
+                  <label className="checkout-label-title">
+                    Email <span className="required_field">*</span>
+                  </label>
+                  <input type="text" name="email" placeholder="Enter email" />
                 </div>
                 <div style={{ width: "50%" }}>
-                  <label className="checkout-label-title">Mobile Number</label>
-                  <input type="text" name="phonenumber" placeholder="" />
+                  <label className="checkout-label-title">
+                    Mobile Number <span className="required_field">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="phonenumber"
+                    placeholder="Enter mobile number"
+                  />
                 </div>
               </div>
 
@@ -246,11 +209,9 @@ const Checkout = () => {
               >
                 {cartItems.map((item) => (
                   <div className="order-summery-product" key={item.id}>
-
-
                     <img
                       src={`/upload/${getFirstImage(item.image)}`}
-                       alt={item.slogan}
+                      alt={item.slogan}
                     />
 
                     <div className="order-summery-product-details">

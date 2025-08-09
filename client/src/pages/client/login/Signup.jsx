@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import "../../../assets/css/client/login.css";
 import login from "../../../assets/image/login-bg.png";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,7 +7,12 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Navbar from "../layout/Navbar";
 import Footer from "../layout/Footer";
 import axios from "axios";
-import { notifyError, notifySuccess, notifyWarning } from "../../admin/layout/ToastMessage";
+import {
+  notifyError,
+  notifySuccess,
+  notifyWarning,
+} from "../../admin/layout/ToastMessage";
+const port = import.meta.env.VITE_SERVER_URL;
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -28,23 +33,23 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
 
-    const { username, email, password, confirmPassword, mobile_number } = formData;
+    const { username, email, password, confirmPassword, mobile_number } =
+      formData;
 
     if (password !== confirmPassword) {
       return notifyWarning("Passwords do not match");
     }
 
     try {
-      const response = await axios.post("http://localhost:1020/signup", {
+      const response = await axios.post(`${port}signup`, {
         username,
         email,
         password,
         mobile_number,
       });
-     
 
       notifySuccess(response.data.message);
-      navigate("/login"); // Redirect after success
+      navigate("/login");
     } catch (error) {
       notifyError(error.response?.data?.message || "Signup failed");
     }
@@ -95,7 +100,9 @@ const Signup = () => {
                   value={formData.password}
                   onChange={handleChange}
                 />
-                <span onClick={() => setPasswordViewOrHide(!passwordViewOrHide)}>
+                <span
+                  onClick={() => setPasswordViewOrHide(!passwordViewOrHide)}
+                >
                   {passwordViewOrHide ? <FaEyeSlash /> : <FaEye />}
                 </span>
               </div>
@@ -142,7 +149,13 @@ const Signup = () => {
 
               <div className="google-btn">
                 <button className="btn primary-btn" type="button">
-                  <FcGoogle style={{ fontSize: "20px", marginRight: "8px", marginBottom: "-4px" }} />
+                  <FcGoogle
+                    style={{
+                      fontSize: "20px",
+                      marginRight: "8px",
+                      marginBottom: "-4px",
+                    }}
+                  />
                   Continue With Google
                 </button>
               </div>

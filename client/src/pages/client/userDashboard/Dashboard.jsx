@@ -15,6 +15,7 @@ const port = import.meta.env.VITE_SERVER_URL;
 
 const Dashboard = () => {
   const [userDashData, setUserDashData] = useState({});
+  const [userAddressData, setUserAddressData] = useState({}); // new state for address
 
   const id = localStorage.getItem("id");
 
@@ -27,19 +28,28 @@ const Dashboard = () => {
     }
   };
 
+  const getUserAddress = async () => {
+    try {
+      const res = await axios.get(`${port}getUserAddressWithId/${id}`);
+      if (res.data && res.data.length > 0) {
+        setUserAddressData(res.data[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching user address:", error);
+    }
+  };
+
   useEffect(() => {
-    fetchUserData();
+    if (id) {
+      fetchUserData();
+      getUserAddress();
+    }
   }, [id]);
 
   const navigate = useNavigate();
 
-  const handleEditAccount = () => {
-    navigate("/user-account-details");
-  };
-
-  const handleEditAddress = () => {
-    navigate("/user-address");
-  };
+  const handleEditAccount = () => navigate("/user-account-details");
+  const handleEditAddress = () => navigate("/user-address");
 
   return (
     <>
@@ -94,7 +104,7 @@ const Dashboard = () => {
 
             <div className="userdashboard_user_details">
               <h5 className="dashboard-user-name">
-                Hello, {userDashData.first_name} {userDashData.last_name}
+                Hello, {userDashData.first_name}, {userDashData.last_name}
               </h5>
               <p>
                 From your account dashboard, you can easily check & view your
@@ -152,21 +162,27 @@ const Dashboard = () => {
               </div>
 
               <div className="account-info-container">
-                <h6>Billing Address</h6>
+                <h6>Shipping Address</h6>
                 <div className="user_details_content">
                   <div className="user_billing_name">
-                    <h5>Sakib Nedariya</h5>
+                    <h5>
+                      {userAddressData.first_name} {userAddressData.last_name}
+                    </h5>
                   </div>
-                  <div className="user_email_and_mobile_no">
+                  <div
+                    className="user_email_and_mobile_no"
+                    style={{ paddingTop: "12px" }}
+                  >
                     <p className="user-billing-address">
-                      Mikro Grafio, 4th Gate, Calicut <br />
-                      Pin: 678425
+                      {userAddressData.address} {userAddressData.city},{" "}
+                      {userAddressData.state} <br />
+                      Pincode: {userAddressData.pincode}
                     </p>
                     <p>
-                      Mobile No:<span>+918569741212</span>
+                      Mobile No: <span>{userAddressData.mobile_number}</span>
                     </p>
                     <p>
-                      Email:<span>sakibnedariya@gmail.com</span>
+                      Email: <span>{userAddressData.email}</span>
                     </p>
                   </div>
                   <button

@@ -503,7 +503,7 @@ button {
   border: 2px solid var(--red-color);
 }
 .required_field {
-  color: var(--red-color);
+  color: var(--red-color) !important;
   font-weight: 600;
 }
 /* ----delete-modal-container---- */
