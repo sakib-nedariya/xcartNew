@@ -61,7 +61,7 @@ const ViewInquiry = () => {
           </div>
           <div className="admin-panel-header-add-buttons">
             <NavLink
-              to="/admin/manage-admins"
+              to="/admin/inquiry"
               className="primary-btn dashboard-add-product-btn"
             >
               <IoArrowBackSharp /> Back

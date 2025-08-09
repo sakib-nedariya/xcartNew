@@ -51,4 +51,27 @@ const getInquiryDataWithId = (req, res) => {
   });
 };
 
-module.exports = { createContactData, getInquiryData, getInquiryDataWithId }
+
+const deleteInquiry = (req, res) => {
+  try {
+     
+    const id = req.params.id;
+    const sql =  `DELETE FROM inquiry WHERE id= ${id}`
+
+    connection.query(sql, (error) => {
+      if (error) {
+        console.log("Error Adding inquiry Data in server.js: ", error);
+        return res.status(500).send("Error adding inquiry data");
+
+      } else {
+        return res.sendStatus(200);
+      }
+    });
+  } catch (error) {
+    console.log("Error in server.js: ", error);
+    return res.status(500).send("Internal server error");
+  }
+}
+
+
+module.exports = { createContactData, getInquiryData, getInquiryDataWithId, deleteInquiry };
