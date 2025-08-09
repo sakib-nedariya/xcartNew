@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../layout/Navbar";
 import Sidebar from "../layout/Sidebar";
 import DashboardProImage from "../../../assets/image/dashboard_product_img.png";
-import DashboardProfile from "../../../assets/image/dash-profile.png";
+import DashboardProfile from "../../../assets/image/default_profile.png";
 import { FaUsers } from "react-icons/fa";
 import { CgProductHunt } from "react-icons/cg";
 import { IoPricetagsOutline } from "react-icons/io5";

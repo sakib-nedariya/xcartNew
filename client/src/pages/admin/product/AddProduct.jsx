@@ -8,7 +8,6 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { RxCross2 } from "react-icons/rx";
 import {
-  notifyWarning,
   notifySuccess,
   notifyError,
 } from "../layout/ToastMessage";

@@ -2,7 +2,7 @@ import React from "react";
 import { LuBellRing } from "react-icons/lu";
 import { GoSearch } from "react-icons/go";
 import { TiArrowSortedDown } from "react-icons/ti";
-import DashboardProfile from "../../../assets/image/dash-profile.png";
+import DashboardProfile from "../../../assets/image/default_profile.png";
 import "../../../assets/css/admin/navbar.css";
 
 const Navbar = () => {
