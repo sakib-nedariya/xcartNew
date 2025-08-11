@@ -4,30 +4,27 @@ import { GoSearch } from "react-icons/go";
 import { TiArrowSortedDown } from "react-icons/ti";
 import DashboardProfile from "../../../assets/image/default_profile.png";
 import "../../../assets/css/admin/navbar.css";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 const port = import.meta.env.VITE_SERVER_URL;
 
 const Navbar = () => {
+  const navigate = useNavigate();
   const [newMessages, setNewMessages] = useState(0);
-  
 
   useEffect(() => {
-    const fetchInquiries = async () => {
+    const fetchUnreadCount = async () => {
       try {
-        const res = await fetch(`${port}getinquirydata`);
+        const res = await fetch(`${port}getunreadinquirycount`);
         const data = await res.json();
-
-        // You can filter for unread if you have a flag like inq.is_read === false
-        setNewMessages(data.length); 
+        setNewMessages(data.count);
       } catch (error) {
-        console.error("Error fetching inquiries:", error);
+        console.error("Error fetching unread count:", error);
       }
     };
 
-    fetchInquiries();
-
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(fetchInquiries, 30000);
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 5000); // Refresh every 5 sec
     return () => clearInterval(interval);
   }, []);
 
@@ -38,7 +35,7 @@ const Navbar = () => {
         <GoSearch />
       </div>
       <div className="dashboard-nav-notification-bell-profile">
-        <div className="dashboard-nav-notification-bell">
+        <div className="dashboard-nav-notification-bell" onClick={() => navigate("/admin/inquiry")}>
           <LuBellRing />
           {newMessages > 0 && (
             <span className="notification-badge">{newMessages}</span>
