@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import Navbar from "../layout/Navbar";
 import UserSidebar from "./UserSidebar";
 import "../../../assets/css/client/userDashboard/wishlist.css";
@@ -27,20 +26,24 @@ const WishList = () => {
           <div className="userdashboard_main_content_div userdashboard_main_border">
             <h6>Wishlist</h6>
             <table>
-              <thead>
-                <tr>
-                  <th>Products</th>
-                  <th>Price</th>
-                  <th>Status</th>
-                  <th>Action</th>
-                  <th></th> 
-                </tr>
-              </thead>
+              {wishlist.length > 0 && (
+                <thead>
+                  <tr>
+                    <th>Products</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                    <th></th>
+                  </tr>
+                </thead>
+              )}
               <tbody>
                 {wishlist.length === 0 ? (
-                  <td colSpan={5} align="center">
-                    <img src={noItemFound} />
-                  </td>
+                  <tr>
+                    <td colSpan={5} align="center">
+                      <img src={noItemFound} />
+                    </td>
+                  </tr>
                 ) : (
                   wishlist.map((product, index) => (
                     <tr key={index}>
@@ -61,13 +64,14 @@ const WishList = () => {
                       </td>
                       <td className="product-in-stock">In Stock</td>
                       <td>
-                        <button className="primary-btn wishlist_add_to_cart_btn ">
+                        <button className="primary-btn wishlist_add_to_cart_btn">
                           Add to Cart
                         </button>
                       </td>
                       <td>
                         <span
                           className="product-remove-btn"
+                          title="Remove"
                           onClick={() => removeFromWishlist(product.id)}
                         >
                           <MdOutlineCancel />

@@ -17,11 +17,9 @@ const ProductCategory = () => {
   const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist();
   const navigate = useNavigate();
 
-  const toggleWishlist = (product) => {
-    isWishlisted(product.id)
-      ? removeFromWishlist(product.id)
-      : addToWishlist(product);
-  };
+ const toggleWishlist = (product) => {
+  isWishlisted(product.id) ? removeFromWishlist(product.id) : addToWishlist(product);
+};
 
   const handleAddToCart = (product) => {
     addToCart(product);

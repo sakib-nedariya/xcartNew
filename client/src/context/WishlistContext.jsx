@@ -1,37 +1,69 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
 
 const WishlistContext = createContext();
+const port = import.meta.env.VITE_SERVER_URL;
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
+  const user_id = localStorage.getItem("id"); // Your stored user ID
+
+  // Fetch wishlist from backend when user logs in or refreshes
+  const fetchWishlist = async () => {
+    if (!user_id) return;
+    try {
+      const res = await axios.get(`${port}wishlist/${user_id}`);
+      setWishlist(res.data || []);
+    } catch (error) {
+      console.error("fetchWishlist error:", error);
+    }
+  };
 
   useEffect(() => {
-    const stored = localStorage.getItem("wishlist");
-    if (stored) setWishlist(JSON.parse(stored));
-  }, []);
+    fetchWishlist();
+  }, [user_id]);
 
-  useEffect(() => {
-    localStorage.setItem("wishlist", JSON.stringify(wishlist));
-  }, [wishlist]);
-
-  const addToWishlist = (product) => {
-    setWishlist((prev) => {
-      const exists = prev.find((item) => item.id === product.id);
-      return exists ? prev : [...prev, product];
-    });
+  // Add product to wishlist
+  const addToWishlist = async (product) => {
+    if (!user_id) {
+      alert("Please login first");
+      return;
+    }
+    try {
+      await axios.post(`${port}wishlist`, {
+        user_id,
+        product_id: product.id,
+      });
+      setWishlist((prev) => [...prev, product]);
+    } catch (error) {
+      console.error("addToWishlist error:", error);
+    }
   };
 
-  const removeFromWishlist = (id) => {
-    setWishlist((prev) => prev.filter((item) => item.id !== id));
+  // Remove product from wishlist
+  const removeFromWishlist = async (product_id) => {
+    if (!user_id) return;
+    try {
+      await axios.delete(`${port}wishlist/${user_id}/${product_id}`);
+      setWishlist((prev) => prev.filter((p) => p.id !== product_id));
+    } catch (error) {
+      console.error("removeFromWishlist error:", error);
+    }
   };
 
-  const isWishlisted = (id) => {
-    return wishlist.some((item) => item.id === id);
-  };
+  // Check if product is wishlisted
+  const isWishlisted = (product_id) =>
+    wishlist.some((item) => item.id === product_id);
 
   return (
     <WishlistContext.Provider
-      value={{ wishlist, addToWishlist, removeFromWishlist, isWishlisted }}
+      value={{
+        wishlist,
+        addToWishlist,
+        removeFromWishlist,
+        isWishlisted,
+        fetchWishlist,
+      }}
     >
       {children}
     </WishlistContext.Provider>

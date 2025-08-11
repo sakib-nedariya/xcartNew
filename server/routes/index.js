@@ -10,7 +10,8 @@ const ProductRoute = require("../routes/product/ProductRoute.js");
 const userLoginRoute = require("../routes/user/UserAccountDetailsRoutes.js");
 const userAdminRoute = require("../routes/user/userAdminRoute.js");
 const UserInquiryRoute = require("../routes/contact_inquiry/ContactInquiryRoute.js");
-const userAddressRoute = require("../routes/user/UserAddressRoute.js")
+const userAddressRoute = require("../routes/user/UserAddressRoute.js");
+const wishlistRoute = require("../routes/wishlist/wishlistRoute.js");
 
 app.use("/", ManageAdminRoute);
 app.use("/", CustomerRoute);
@@ -22,5 +23,6 @@ app.use("/", userLoginRoute);
 app.use("/", userAdminRoute);
 app.use("/", UserInquiryRoute);
 app.use("/", userAddressRoute);
+app.use("/", wishlistRoute);
 
 module.exports = app
