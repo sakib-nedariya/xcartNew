@@ -78,3 +78,20 @@
     left: 95.3%;
   }
 }
+
+
+.notification-badge{
+ position: absolute;
+    font-family: var(--info-font);
+    top: 21px;
+    right: 210px;
+    background-color: var(--primary-btn-bg);
+    color: var(--white-color);
+    font-size: 10px;
+    height: 16px;
+    width: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
