@@ -590,7 +590,7 @@ button {
 .active-user-container .user-info {
   margin-left: 12px;
 }
-.user-name {
+.user-info .user-name {
   font-size: 14px;
   font-weight: 600;
   margin: 0;
@@ -608,25 +608,4 @@ button {
   height: 15px;
   border: 2px solid var(--white-color);
   border-radius: 50%;
-}
-
-
-
-
-.dashboard-nav-notification-bell {
-  position: relative;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.notification-badge {
-  position: absolute;
-  top: -2px;
-  right: 12px;
-  background-color: var(--primary-btn-bg);
-  color: white;
-  font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: 50%;
-  font-weight: bold;
 }

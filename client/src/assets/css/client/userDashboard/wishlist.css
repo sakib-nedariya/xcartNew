@@ -2,6 +2,7 @@
   padding: 16px 20px;
   font-size: 19px;
   font-family: var(--info-font);
+  border-bottom: 1px solid var(--primary-border-color);
 }
 
 .userdashboard_main_content_div table {
@@ -15,7 +16,6 @@
   color: var(--light-gray-color);
   font-weight: 500;
   padding: 10px 0 10px 16px;
-  border-top: 1px solid var(--primary-border-color);
   border-bottom: 1px solid var(--primary-border-color);
   background: var(--light-white-color);
 }
@@ -27,8 +27,8 @@
   align-items: center;
 }
 .userdashboard_inner_content_div img {
-  max-width: 70px;
-  height: 70px;
+  max-width: 65px;
+  height: 65px;
   object-fit: contain;
   margin-right: 8px;
 }

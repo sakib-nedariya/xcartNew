@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../../../assets/css/client/checkout.css";
 import CODImage from "../../../assets/image/CashOnDelivery.png";
 import Razorpay from "../../../assets/image/razorpay.png";
@@ -6,12 +6,62 @@ import MyWallet from "../../../assets/image/MyWallet.png";
 import Navbar from "../layout/Navbar";
 import Footer from "../layout/Footer";
 import { useCart } from "../../../context/CartContext";
+import axios from "axios";
+
+const port = import.meta.env.VITE_SERVER_URL;
 
 const Checkout = () => {
   const [selectedOption, setSelectedOption] = useState("");
+  const [formValues, setFormValues] = useState({
+    firstname: "",
+    lastname: "",
+    companyname: "",
+    address: "",
+    country: "",
+    state: "",
+    city: "",
+    pincode: "",
+    email: "",
+    phonenumber: "",
+  });
+
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const loggedInUserId = storedUser?.id || localStorage.getItem("id");
 
   const handleSelection = (option) => setSelectedOption(option);
   const { cartItems } = useCart();
+
+  // Fetch saved address on load
+  useEffect(() => {
+    if (loggedInUserId) {
+      axios
+        .get(`${port}getShippingAddress/${loggedInUserId}`)
+        .then((res) => {
+          setFormValues({
+            firstname: res.data.first_name || "",
+            lastname: res.data.last_name || "",
+            companyname: res.data.company_name || "",
+            address: res.data.address || "",
+            country: res.data.country || "",
+            state: res.data.state || "",
+            city: res.data.city || "",
+            pincode: res.data.pincode || "",
+            email: res.data.email || "",
+            phonenumber: res.data.mobile_number || "",
+          });
+        })
+        .catch((err) => {
+          console.log("No saved address or error:", err);
+        });
+    }
+  }, [loggedInUserId]);
+
+  const handleChange = (e) => {
+    setFormValues({
+      ...formValues,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const getSubtotal = () => {
     return cartItems.reduce(
@@ -51,13 +101,21 @@ const Checkout = () => {
                     type="text"
                     name="firstname"
                     placeholder="First Name"
+                    value={formValues.firstname}
+                    onChange={handleChange}
                   />
                 </div>
                 <div style={{ width: "25%" }}>
                   <label className="checkout-label-title">
                     Last Name <span className="required_field">*</span>
                   </label>
-                  <input type="text" name="lastname" placeholder="Last Name" />
+                  <input
+                    type="text"
+                    name="lastname"
+                    placeholder="Last Name"
+                    value={formValues.lastname}
+                    onChange={handleChange}
+                  />
                 </div>
                 <div style={{ width: "50%" }}>
                   <label className="checkout-label-title">
@@ -68,6 +126,8 @@ const Checkout = () => {
                     type="text"
                     name="companyname"
                     placeholder="Enter your company name"
+                    value={formValues.companyname}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -81,6 +141,8 @@ const Checkout = () => {
                     type="text"
                     name="address"
                     placeholder="flat / street address / village"
+                    value={formValues.address}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -94,6 +156,8 @@ const Checkout = () => {
                     type="text"
                     name="country"
                     placeholder="Enter country"
+                    value={formValues.country}
+                    onChange={handleChange}
                   />
                 </div>
 
@@ -101,14 +165,26 @@ const Checkout = () => {
                   <label className="checkout-label-title">
                     State <span className="required_field">*</span>
                   </label>
-                  <input type="text" name="state" placeholder="Enter state" />
+                  <input
+                    type="text"
+                    name="state"
+                    placeholder="Enter state"
+                    value={formValues.state}
+                    onChange={handleChange}
+                  />
                 </div>
 
                 <div style={{ width: "25%" }}>
                   <label className="checkout-label-title">
                     City <span className="required_field">*</span>
                   </label>
-                  <input type="text" name="city" placeholder="Enter city" />
+                  <input
+                    type="text"
+                    name="city"
+                    placeholder="Enter city"
+                    value={formValues.city}
+                    onChange={handleChange}
+                  />
                 </div>
 
                 <div style={{ width: "25%" }}>
@@ -119,6 +195,8 @@ const Checkout = () => {
                     type="text"
                     name="pincode"
                     placeholder="Enter pincode"
+                    value={formValues.pincode}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -128,7 +206,13 @@ const Checkout = () => {
                   <label className="checkout-label-title">
                     Email <span className="required_field">*</span>
                   </label>
-                  <input type="text" name="email" placeholder="Enter email" />
+                  <input
+                    type="text"
+                    name="email"
+                    placeholder="Enter email"
+                    value={formValues.email}
+                    onChange={handleChange}
+                  />
                 </div>
                 <div style={{ width: "50%" }}>
                   <label className="checkout-label-title">
@@ -138,6 +222,8 @@ const Checkout = () => {
                     type="text"
                     name="phonenumber"
                     placeholder="Enter mobile number"
+                    value={formValues.phonenumber}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
