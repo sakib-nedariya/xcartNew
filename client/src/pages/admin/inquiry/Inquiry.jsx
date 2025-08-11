@@ -30,7 +30,16 @@ const Inquiry = () => {
   };
 
   useEffect(() => {
+    const markAsRead = async () => {
+      try {
+        await axios.post(`${port}markinquiriesread`);
+      } catch (error) {
+        console.error("Error marking inquiries as read:", error);
+      }
+    };
+
     getInquiries();
+    markAsRead(); // Page open hote hi unread reset
     setSelectedInquiries([]);
   }, []);
 
@@ -96,24 +105,20 @@ const Inquiry = () => {
       <Navbar />
       <Sidebar />
       <main className="admin-panel-header-div full-height">
-      <div style={{ display: "flex", justifyContent:"space-between"}}>
-        <Breadcrumb title="Inquiry" breadcrumbText="Inquiry List" />
-
-        {/* Delete Button (when something is selected) */}
-        {(selectedInquiries.length > 0 || deleteId) && (
-          <div className="admin-panel-header-tabs-and-deleteall-btn">
-            <button
-              className="admin-header-delete-btn delete-btn"
-              onClick={() => openDeleteModal()}
-            >
-              <MdDelete />
-              Delete
-            </button>
-          </div>
-        )}
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <Breadcrumb title="Inquiry" breadcrumbText="Inquiry List" />
+          {(selectedInquiries.length > 0 || deleteId) && (
+            <div className="admin-panel-header-tabs-and-deleteall-btn">
+              <button
+                className="admin-header-delete-btn delete-btn"
+                onClick={() => openDeleteModal()}
+              >
+                <MdDelete />
+                Delete
+              </button>
+            </div>
+          )}
         </div>
-
-
 
         <div className="dashboard-table-container" ref={tableContainerRef}>
           <table>
@@ -146,7 +151,7 @@ const Inquiry = () => {
                     />
                   </td>
                   <td style={{ color: "black" }}>
-                    {inq.first_name}&nbsp;{inq.last_name}
+                    {inq.first_name} {inq.last_name}
                   </td>
                   <td style={{ textTransform: "lowercase" }}>{inq.email}</td>
                   <td>{inq.mobile_number}</td>
