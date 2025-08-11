@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 const port = import.meta.env.VITE_SERVER_URL;
 
 const Navbar = () => {
-
   const navigate = useNavigate();
   const [newMessages, setNewMessages] = useState(0);
 
@@ -29,7 +28,6 @@ const Navbar = () => {
     return () => clearInterval(interval);
   }, []);
 
-
   return (
     <nav className="dashboard-navbar">
       <div className="dashboard-navbar-seach-input">
@@ -37,9 +35,14 @@ const Navbar = () => {
         <GoSearch />
       </div>
       <div className="dashboard-nav-notification-bell-profile">
-        <div className="dashboard-nav-notification-bell" onClick={() => navigate("/admin/inquiry")}>
+        <div
+          className="dashboard-nav-notification-bell"
+          onClick={() => navigate("/admin/inquiry")}
+        >
           <LuBellRing />
-          <span className="inquiry-notification-badge"></span>
+          {newMessages > 0 && (
+            <span className="notification-badge">{newMessages}</span>
+          )}{" "}
         </div>
         <div className="dashboard-nav-profile">
           <img src={DashboardProfile} alt="profile-logo" />
