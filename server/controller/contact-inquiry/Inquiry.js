@@ -30,16 +30,6 @@ const createContactData = (req, res) => {
   );
 };
 
-const getInquiryData = (req, res) => {
-  const sql = "SELECT * FROM inquiry ORDER BY id DESC";
-  connection.query(sql, (error, result) => {
-    if (error) {
-      console.log("Error Getting Data inquiry Table in server.js" + error);
-    }
-    return res.json(result);
-  });
-};
-
 const getInquiryDataWithId = (req, res) => {
   const id = req.params.id
   const sql = `SELECT * FROM inquiry WHERE id=?`;
@@ -73,5 +63,43 @@ const deleteInquiry = (req, res) => {
   }
 }
 
+// Get all inquiries
+const getInquiryData = (req, res) => {
+  connection.query("SELECT * FROM inquiry ORDER BY id DESC", (err, rows) => {
+    if (err) {
+      console.error("Error Getting Data inquiry Table:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json(rows);
+  });
+};
 
-module.exports = { createContactData, getInquiryData, getInquiryDataWithId, deleteInquiry };
+// Get unread count
+const getUnreadInquiryCount = (req, res) => {
+  connection.query(
+    "SELECT COUNT(*) AS count FROM inquiry WHERE is_read = 0",
+    (err, rows) => {
+      if (err) {
+        console.error("Error Getting Unread Count:", err);
+        return res.status(500).json({ error: "Database error" });
+      }
+      res.json({ count: rows[0].count });
+    }
+  );
+};
+
+// Mark all inquiries as read
+const markInquiriesRead = (req, res) => {
+  connection.query(
+    "UPDATE inquiry SET is_read = 1 WHERE is_read = 0",
+    (err) => {
+      if (err) {
+        console.error("Error Marking Inquiries Read:", err);
+        return res.status(500).json({ error: "Database error" });
+      }
+      res.json({ success: true });
+    }
+  );
+};
+
+module.exports = { createContactData, getInquiryData, getInquiryDataWithId, deleteInquiry, getUnreadInquiryCount, markInquiriesRead };
