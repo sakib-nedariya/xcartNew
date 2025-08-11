@@ -6,6 +6,9 @@ router.route("/inquiry").post(inquiry.createContactData);
 router.route("/getinquirydata").get(inquiry.getInquiryData);
 router.route("/getinquirydatawithid/:id").get(inquiry.getInquiryDataWithId);
 router.route("/deleteinquirydata/:id").delete(inquiry.deleteInquiry);
+router.get("/getunreadinquirycount", inquiry.getUnreadInquiryCount);
+router.post("/markinquiriesread", inquiry.markInquiriesRead);
+
 
 
 module.exports = router;
