@@ -4,6 +4,7 @@ import { TiArrowSortedDown } from "react-icons/ti";
 import DashboardProfile from "../../../assets/image/default_profile.png";
 import "../../../assets/css/admin/navbar.css";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const port = import.meta.env.VITE_SERVER_URL;
 
@@ -24,7 +25,7 @@ const Navbar = () => {
     };
 
     fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 5000); // Refresh every 5 sec
+    const interval = setInterval(fetchUnreadCount, 5000);
     return () => clearInterval(interval);
   }, []);
 

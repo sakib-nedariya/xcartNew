@@ -58,25 +58,24 @@ const Navbar = () => {
             </div>
           ) : (
             <div className="navbar_shopping_cart_and_profile">
-  <NavLink to="/shopping-cart" className="cart-icon-wrapper">
-    <AiOutlineShoppingCart />
-    {cartCount > 0 && (
-      <span className="cart-badge">{cartCount}</span>
-    )}
-  </NavLink>
+              <NavLink to="/shopping-cart" className="cart-icon-wrapper">
+                <AiOutlineShoppingCart />
+                {cartCount > 0 && (
+                  <span className="cart-badge">{cartCount}</span>
+                )}
+              </NavLink>
 
-  <NavLink to="/wishlist" className="cart-icon-wrapper">
-    <AiOutlineHeart />
-    {wishlist.length > 0 && (
-      <span className="cart-badge">{wishlist.length}</span>
-    )}
-  </NavLink>
+              <NavLink to="/wishlist" className="cart-icon-wrapper">
+                <AiOutlineHeart />
+                {wishlist.length > 0 && (
+                  <span className="cart-badge">{wishlist.length}</span>
+                )}
+              </NavLink>
 
-  <NavLink to="/user-account-details">
-    <AiOutlineUser />
-  </NavLink>
-</div>
-
+              <NavLink to="/user-account-details">
+                <AiOutlineUser />
+              </NavLink>
+            </div>
           )}
 
           <span className="menu-icon">
