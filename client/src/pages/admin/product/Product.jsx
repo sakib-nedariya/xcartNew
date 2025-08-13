@@ -25,6 +25,8 @@ const Product = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const navigate = useNavigate();
+  const [selectedBrand, setSelectedBrand] = useState("All Brands");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
 
   const tableContainerRef = useRef(null);
 
@@ -127,12 +129,33 @@ const Product = () => {
   };
 
   const filteredData = productData.filter((product) => {
-    if (activeTab === "All Products") return true;
-    if (activeTab === "Published") return parseInt(product.status, 10) === 1;
-    if (activeTab === "Low Stock") return parseInt(product.status, 10) === 2;
-    if (activeTab === "Draft") return parseInt(product.status, 10) === 3;
-    if (activeTab === "Out Of Stock") return parseInt(product.status, 10) === 0;
-    return false;
+    // First filter by status
+    let statusMatch = true;
+    if (activeTab === "Published")
+      statusMatch = parseInt(product.status, 10) === 1;
+    if (activeTab === "Low Stock")
+      statusMatch = parseInt(product.status, 10) === 2;
+    if (activeTab === "Draft") statusMatch = parseInt(product.status, 10) === 3;
+    if (activeTab === "Out Of Stock")
+      statusMatch = parseInt(product.status, 10) === 0;
+
+    // Then filter by brand
+    let brandMatch = true;
+    if (selectedBrand !== "All Brands") {
+      brandMatch =
+        brandData.find((b) => b.id === product.brand_id)?.name ===
+        selectedBrand;
+    }
+
+    // Then filter by category
+    let categoryMatch = true;
+    if (selectedCategory !== "All Categories") {
+      categoryMatch =
+        categoryData.find((c) => c.id === product.cate_id)?.name ===
+        selectedCategory;
+    }
+
+    return statusMatch && brandMatch && categoryMatch;
   });
 
   const totalItems = filteredData.length;
@@ -183,6 +206,44 @@ const Product = () => {
                 {tab}
               </button>
             ))}
+          </div>
+
+          <div className="brand-filter-and-category-filter">
+            <div
+              className="brand-filter admin-panel-header-tabs "
+              style={{ marginTop: "10px" }}
+            >
+              <select
+                value={selectedBrand}
+                onChange={(e) => setSelectedBrand(e.target.value)}
+                style={{ padding: "5px" }}
+              >
+                <option value="All Brands">All Brands</option>
+                {brandData.map((brand) => (
+                  <option key={brand.id} value={brand.name}>
+                    {brand.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div
+              className="category-filter admin-panel-header-tabs "
+              style={{ marginTop: "10px" }}
+            >
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                style={{ padding: "5px" }}
+              >
+                <option value="All Categories">All Categories</option>
+                {categoryData.map((category) => (
+                  <option key={category.id} value={category.name}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {(selectedProducts.length > 0 || deleteId) && (
