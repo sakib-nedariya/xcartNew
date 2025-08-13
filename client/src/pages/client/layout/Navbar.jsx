@@ -78,7 +78,7 @@ const Navbar = () => {
             </div>
           )}
 
-          <span className="menu-icon">
+          <span className="navbar-menu-icon">
             {isOpen ? (
               <FaTimes onClick={toggleMenu} />
             ) : (

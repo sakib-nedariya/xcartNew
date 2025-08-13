@@ -42,7 +42,7 @@ const Navbar = () => {
           <LuBellRing />
           {newMessages > 0 && (
             <span className="notification-badge">{newMessages}</span>
-          )}{" "}
+          )}
         </div>
         <div className="dashboard-nav-profile">
           <img src={DashboardProfile} alt="profile-logo" />

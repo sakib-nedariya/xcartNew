@@ -39,7 +39,7 @@ const Inquiry = () => {
     };
 
     getInquiries();
-    markAsRead(); // Page open hote hi unread reset
+    markAsRead(); 
     setSelectedInquiries([]);
   }, []);
 
@@ -155,7 +155,7 @@ const Inquiry = () => {
                   </td>
                   <td style={{ textTransform: "lowercase" }}>{inq.email}</td>
                   <td>{inq.mobile_number}</td>
-                  <td className="inquiry-message">{inq.message}</td>
+                  <td className="inquiry-message">{inq.message.slice(0,60)}...</td>
                   <td className="actions">
                     <IoIosEye
                       title="View"

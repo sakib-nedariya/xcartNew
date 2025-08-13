@@ -47,14 +47,12 @@ const ProductCategory = () => {
 
       setProductData(allProducts);
 
-      // Filter only categories that have products
       const filteredCategories = allCategories.filter((category) =>
         allProducts.some((product) => product.cate_id === category.id)
       );
 
       setCategoryData(filteredCategories);
 
-      // Set default active tab to the first valid category
       if (filteredCategories.length > 0) {
         setActiveTab(filteredCategories[0].id);
       }
@@ -121,7 +119,7 @@ const ProductCategory = () => {
                     className="heart-icon"
                     onClick={() => toggleWishlist(product)}
                     style={{
-                      color: isWishlisted(product.id) ? "blue" : "#bbb",
+                      color: isWishlisted(product.id) ? "#3858D6" : "#bbb",
                     }}
                   >
                     {isWishlisted(product.id) ? (

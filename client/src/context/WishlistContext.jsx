@@ -6,9 +6,8 @@ const port = import.meta.env.VITE_SERVER_URL;
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
-  const user_id = localStorage.getItem("id"); // Your stored user ID
+  const user_id = localStorage.getItem("id"); 
 
-  // Fetch wishlist from backend when user logs in or refreshes
   const fetchWishlist = async () => {
     if (!user_id) return;
     try {

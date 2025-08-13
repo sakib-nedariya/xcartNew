@@ -218,14 +218,11 @@
 
 /* Bookmark Button */
 .product-view-container .bookmark-btn {
-  border: 2px solid var(--primary-font-color);
-  color: var(--light-black-color);
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
+     border: 2px solid var(--primary-font-color);
+    padding: 8px 13px;
+    border-radius: 8px;
+    background: none;
+    display: flex;
 }
 
 .product-view-container .product-view-page-product-description {

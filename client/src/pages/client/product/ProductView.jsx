@@ -5,14 +5,16 @@ import "../../../assets/css/main.css";
 import Navbar from "../layout/Navbar";
 import Footer from "../layout/Footer";
 import { HiMinusSm, HiPlusSm } from "react-icons/hi";
-import { FiHeart } from "react-icons/fi";
 import { useCart } from "../../../context/CartContext";
+import { IoMdHeartEmpty, IoMdHeart } from "react-icons/io";
 import axios from "axios";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Pagination, Navigation } from "swiper/modules";
+import { useWishlist } from "../../../context/WishlistContext";
+
 
 const port = import.meta.env.VITE_SERVER_URL;
 
@@ -21,6 +23,13 @@ const ProductView = () => {
   const [productData, setProductData] = useState([]);
   const [selectedImage, setSelectedImage] = useState("");
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist();
+
+  const toggleWishlist = (product) => {
+    isWishlisted(product.id)
+      ? removeFromWishlist(product.id)
+      : addToWishlist(product);
+  };
 
   const handleAddToCart = (product) => {
     addToCart(product);
@@ -167,8 +176,18 @@ const ProductView = () => {
 
                       <div className="buy-now-icon">
                         <button className="primary-btn buy-now">Buy Now</button>
-                        <button className="bookmark-btn">
-                          <FiHeart size={22} />
+                        <button
+                          className="bookmark-btn"
+                          onClick={() => toggleWishlist(product)}
+                          style={{
+                            color: isWishlisted(product.id) ? "#3858D6" : "#bbb",
+                          }}
+                        >
+                          {isWishlisted(product.id) ? (
+                            <IoMdHeart size={28}/>
+                          ) : (
+                            <IoMdHeartEmpty size={28} />
+                          )}
                         </button>
                       </div>
                     </div>

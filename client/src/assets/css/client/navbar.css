@@ -64,11 +64,11 @@
   position: relative;
 }
 
-.cart-badge {
+.navbar_shopping_cart_and_profile .cart-badge {
   position: absolute;
   font-family: var(--info-font);
-  top: -5px;
-  right: -6px;
+  top: -6px;
+  right: -5px;
   background-color: var(--primary-btn-bg);
   color: var(--white-color);
   font-size: 10px;
@@ -81,7 +81,7 @@
 }
 
 /* Hamburger Menu Icon */
-.menu-icon {
+.navbar-menu-icon {
   display: none;
   font-size: 20px;
   color: var(--primary-font-color);
