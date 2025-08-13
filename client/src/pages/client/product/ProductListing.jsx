@@ -330,7 +330,7 @@ const ProductListing = () => {
                     }}
             
                     style={{
-                      color: isWishlisted(product.id) ? "blue" : "#bbb",
+                      color: isWishlisted(product.id) ? "#3858D6" : "#bbb",
                     }}
                   >
                     {isWishlisted(product.id) ? (

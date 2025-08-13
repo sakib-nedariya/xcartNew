@@ -5,8 +5,12 @@ import { MdOutlineCancel } from "react-icons/md";
 import Footer from "../layout/Footer";
 import { useWishlist } from "../../../context/WishlistContext";
 import noItemFound from "../../../assets/image/wishlist.jpg";
+import { useNavigate } from "react-router-dom";
 
 const WishList = () => {
+  const { wishlist, removeFromWishlist } = useWishlist();
+  const navigate = useNavigate();
+
   const getFirstImage = (image) => {
     if (Array.isArray(image)) return image[0];
     try {
@@ -16,7 +20,6 @@ const WishList = () => {
       return image;
     }
   };
-  const { wishlist, removeFromWishlist } = useWishlist();
   return (
     <>
       <Navbar />
@@ -47,7 +50,10 @@ const WishList = () => {
                 ) : (
                   wishlist.map((product, index) => (
                     <tr key={index}>
-                      <td className="userdashboard_inner_content_div">
+                      <td
+                        className="userdashboard_inner_content_div"
+                        onClick={() => navigate(`/product/${product.id}`)}
+                      >
                         <img
                           src={`/upload/${getFirstImage(product.image)}`}
                           alt="product_image"

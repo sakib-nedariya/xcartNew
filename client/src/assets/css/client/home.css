@@ -201,6 +201,16 @@
 .product-category-image-with-price.product-card {
   cursor: pointer;
 }
+.added-animation {
+  background-color: #4caf50 !important;
+  color: var(--white-color) !important;
+  border: 1px solid #4caf50;
+  transform: scale(1.05);
+  transition: all 0.3s ease;
+}
+.added-animation:hover {
+  transform: scale(1.08);
+}
 
 /* -----product-category-end------ */
 /* -----subscribe-newsletter-section-start------ */
@@ -273,7 +283,8 @@
   transform: translateY(-5px);
 }
 
-.product-category-image-with-price .heart-icon, .product-items .heart-icon {
+.product-category-image-with-price .heart-icon,
+.product-items .heart-icon {
   position: absolute;
   top: 12px;
   right: 12px;
@@ -292,7 +303,7 @@ button.primary-btn.homepage-add-to-cart-btn {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
 }
 
 /* =======CATEGORY NEW CSS */

@@ -1,11 +1,5 @@
-// controller/wishlist/Wishlist.js
 const connection = require("../../connection/connection");
 
-/**
- * Add product to wishlist (prevents duplicates).
- * Expects: body { user_id, product_id }
- * Returns: 201 + { product } on success, or 200 + message if already exists
- */
 const addToWishlist = (req, res) => {
   const user_id = req.body.user_id || req.body.id;
   const product_id = req.body.product_id || req.params.product_id;
@@ -46,10 +40,6 @@ const addToWishlist = (req, res) => {
   });
 };
 
-/**
- * Remove product from wishlist.
- * Route: DELETE /wishlist/:user_id/:product_id
- */
 const removeFromWishlist = (req, res) => {
   const user_id = req.params.user_id || req.params.id || req.body.user_id;
   const product_id = req.params.product_id || req.body.product_id;
@@ -68,12 +58,7 @@ const removeFromWishlist = (req, res) => {
   });
 };
 
-/**
- * Get wishlist for a user
- * Route: GET /wishlist/:user_id
- * Returns an array of product objects:
- * [{ id, slogan, price, image }, ...]
- */
+
 const getWishlistByUserId = (req, res) => {
   const user_id = req.params.user_id || req.params.id;
 

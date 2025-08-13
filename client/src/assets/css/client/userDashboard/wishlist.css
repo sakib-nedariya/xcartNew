@@ -25,6 +25,7 @@
 .userdashboard_inner_content_div {
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 .userdashboard_inner_content_div img {
   max-width: 65px;

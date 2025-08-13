@@ -24,7 +24,7 @@ const Navbar = () => {
     };
 
     fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 5000); // Refresh every 5 sec
+    const interval = setInterval(fetchUnreadCount, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -42,7 +42,7 @@ const Navbar = () => {
           <LuBellRing />
           {newMessages > 0 && (
             <span className="notification-badge">{newMessages}</span>
-          )}{" "}
+          )}
         </div>
         <div className="dashboard-nav-profile">
           <img src={DashboardProfile} alt="profile-logo" />

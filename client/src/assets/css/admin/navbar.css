@@ -41,6 +41,24 @@
   margin-right: 25px;
   color: var(--light-gray-color);
 }
+.dashboard-nav-notification-bell{
+  position: relative;
+}
+.dashboard-nav-notification-bell .notification-badge{
+ position: absolute;
+    font-family: var(--info-font);
+    top: -2px;
+    right: 18px;
+    background-color: var(--primary-btn-bg);
+    color: var(--white-color);
+    font-size: 12px;
+    height: 18px;
+    width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
 .dashboard-nav-profile img {
   height: 40px;
   width: 40px;
@@ -72,26 +90,9 @@
 
 @media screen and (max-width: 1370px) {
   .dashboard-navbar-seach-input input {
-    width: 7.7in;
+    width: 7.5in;
   }
   .dashboard-navbar-seach-input svg {
     left: 95.3%;
   }
-}
-
-
-.notification-badge{
- position: absolute;
-    font-family: var(--info-font);
-    top: 21px;
-    right: 210px;
-    background-color: var(--primary-btn-bg);
-    color: var(--white-color);
-    font-size: 10px;
-    height: 16px;
-    width: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
 }
