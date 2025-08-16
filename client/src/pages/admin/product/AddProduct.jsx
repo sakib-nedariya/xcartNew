@@ -3,14 +3,12 @@ import Sidebar from "../layout/Sidebar";
 import Navbar from "../layout/Navbar";
 import { IoMdArrowDropright } from "react-icons/io";
 import { MdSave } from "react-icons/md";
+import { MdDeleteForever } from "react-icons/md";
 import { HiXMark } from "react-icons/hi2";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { RxCross2 } from "react-icons/rx";
-import {
-  notifySuccess,
-  notifyError,
-} from "../layout/ToastMessage";
+import { notifySuccess, notifyError } from "../layout/ToastMessage";
 import default_profile from "../../../assets/image/default_profile.png";
 
 const port = import.meta.env.VITE_SERVER_URL;
@@ -47,11 +45,12 @@ const AddProduct = () => {
     description: "",
     image: [],
     profilePreview: [],
-    price: "",
     discount: "",
     memory: "",
     storage: "",
+    price: "",
     status: "",
+    variants: [],
   });
 
   const handleChangeInput = (e) => {
@@ -64,7 +63,6 @@ const AddProduct = () => {
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-
     setAddProductData((prevData) => ({
       ...prevData,
       image: [...prevData.image, ...files],
@@ -89,6 +87,32 @@ const AddProduct = () => {
     });
   };
 
+  const handleAddVariant = () => {
+    setAddProductData((prev) => ({
+      ...prev,
+      variants: [
+        ...prev.variants,
+        {
+          memory: prev.memory,
+          storage: prev.storage,
+          price: prev.price,
+          discount: prev.discount,
+        },
+      ],
+      memory: "",
+      storage: "",
+      price: "",
+      discount: "",
+    }));
+  };
+
+  const removeVariant = (index) => {
+    setAddProductData((prev) => ({
+      ...prev,
+      variants: prev.variants.filter((_, i) => i !== index),
+    }));
+  };
+
   const saveProductData = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -97,13 +121,10 @@ const AddProduct = () => {
     formData.append("name", addProductData.name);
     formData.append("slogan", addProductData.slogan);
     formData.append("description", addProductData.description);
-    formData.append("price", addProductData.price);
-    formData.append("discount", addProductData.discount);
-    formData.append("memory", addProductData.memory);
-    formData.append("storage", addProductData.storage);
     formData.append("status", addProductData.status);
+    formData.append("variants", JSON.stringify(addProductData.variants));
 
-    if (addProductData.image && addProductData.image.length > 0) {
+    if (addProductData.image.length > 0) {
       addProductData.image.forEach((file) => {
         formData.append("images", file);
       });
@@ -193,30 +214,28 @@ const AddProduct = () => {
 
         <div className="dashboard-add-content-card-div">
           <div className="dashboard-add-content-left-side">
+            {/* General Info */}
             <div className="dashboard-add-content-card">
               <h6>General Information</h6>
               <div className="add-product-form-container">
-                <label htmlFor="product-name">Product Name</label>
+                <label>Product Name</label>
                 <input
                   type="text"
-                  id="product-name"
                   name="name"
                   value={addProductData.name}
                   onChange={handleChangeInput}
                   placeholder="Type product name here..."
                 />
-                <label htmlFor="product-slogan">Slogan</label>
+                <label>Slogan</label>
                 <input
                   type="text"
-                  id="product-slogan"
                   name="slogan"
                   value={addProductData.slogan}
                   onChange={handleChangeInput}
                   placeholder="Type product slogan here..."
                 />
-                <label htmlFor="product-description">Description</label>
+                <label>Description</label>
                 <textarea
-                  id="product-description"
                   name="description"
                   value={addProductData.description}
                   onChange={handleChangeInput}
@@ -225,10 +244,11 @@ const AddProduct = () => {
               </div>
             </div>
 
+            {/* Media */}
             <div className="dashboard-add-content-card">
               <h6>Media</h6>
               <div className="add-product-form-container">
-                <label htmlFor="imageInputFile">Photo</label>
+                <label>Photo</label>
                 <div className="add-product-upload-container">
                   <div className="add-product-upload-icon preview-grid">
                     {addProductData.profilePreview.length > 0 ? (
@@ -262,7 +282,6 @@ const AddProduct = () => {
                       />
                     )}
                   </div>
-
                   <p className="add-product-upload-text">
                     Drag and drop image here, or click add image
                   </p>
@@ -285,40 +304,114 @@ const AddProduct = () => {
               </div>
             </div>
 
+            {/* Variants */}
             <div className="dashboard-add-content-card">
-              <h6>Pricing</h6>
-              <div className="add-product-form-container">
-                <label htmlFor="product-price">Base Price</label>
-                <input
-                  type="text"
-                  id="product-price"
-                  name="price"
-                  value={addProductData.price}
-                  onChange={handleChangeInput}
-                  placeholder="Type base price here..."
-                />
-                <label htmlFor="product-discount">
-                  Discount Percentage (%)
-                </label>
-                <input
-                  type="text"
-                  id="product-discount"
-                  name="discount"
-                  value={addProductData.discount}
-                  onChange={handleChangeInput}
-                  placeholder="Type discount percentage..."
-                />
+              <div
+                className="product-variant-add-header"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <h6 style={{ paddingBottom: "0px" }}>
+                  Memory, Storage, Price & Discount
+                </h6>
+                <button
+                  type="button"
+                  className="primary-btn"
+                  onClick={handleAddVariant}
+                >
+                  Save
+                </button>
               </div>
+              <div className="add-product-form-container product-container-grid">
+                <div>
+                  <label>Memory (RAM)</label>
+                  <input
+                    type="text"
+                    name="memory"
+                    value={addProductData.memory}
+                    onChange={handleChangeInput}
+                    placeholder="Memory"
+                  />
+                </div>
+                <div>
+                  <label>Storage</label>
+                  <input
+                    type="text"
+                    name="storage"
+                    value={addProductData.storage}
+                    onChange={handleChangeInput}
+                    placeholder="Storage"
+                  />
+                </div>
+                <div>
+                  <label>Price</label>
+                  <input
+                    type="text"
+                    name="price"
+                    value={addProductData.price}
+                    onChange={handleChangeInput}
+                    placeholder="Price"
+                  />
+                </div>
+                <div>
+                  <label>Discount (%)</label>
+                  <input
+                    type="text"
+                    name="discount"
+                    value={addProductData.discount}
+                    onChange={handleChangeInput}
+                    placeholder="Discount"
+                  />
+                </div>
+              </div>
+
+              {addProductData.variants.length > 0 && (
+                <div className="dashboard-table-container inner-add-product-variants">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Memory</th>
+                        <th>Storage</th>
+                        <th>Price</th>
+                        <th>Discount</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {addProductData.variants.map((v, index) => (
+                        <tr key={index}>
+                          <td>{v.memory}</td>
+                          <td>{v.storage}</td>
+                          <td>{v.price}</td>
+                          <td>{v.discount}</td>
+                          <td className="inner-product-variants-remove">
+                            <MdDeleteForever
+                              type="button"
+                              title="Remove"
+                              onClick={() => removeVariant(index)}
+                              style={{ fontSize: "22px", cursor: "pointer" }}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
 
+          {/* Right Side */}
           <div className="dashboard-add-content-right-side">
+            {/* Brand & Category */}
             <div className="dashboard-add-content-card">
               <h6>Brand & Category</h6>
               <div className="add-product-form-container">
-                <label htmlFor="brand">Select Brand</label>
+                <label>Select Brand</label>
                 <select
-                  id="brand"
                   name="brand_id"
                   value={addProductData.brand_id}
                   onChange={handleChangeInput}
@@ -332,9 +425,8 @@ const AddProduct = () => {
                 </select>
               </div>
               <div className="add-product-form-container">
-                <label htmlFor="category">Select Category</label>
+                <label>Select Category</label>
                 <select
-                  id="category"
                   name="cate_id"
                   value={addProductData.cate_id}
                   onChange={handleChangeInput}
@@ -349,36 +441,12 @@ const AddProduct = () => {
               </div>
             </div>
 
-            <div className="dashboard-add-content-card">
-              <h6>Memory & Storage</h6>
-              <div className="add-product-form-container">
-                <label htmlFor="memory">Memory (RAM)</label>
-                <input
-                  type="text"
-                  id="memory"
-                  name="memory"
-                  value={addProductData.memory}
-                  onChange={handleChangeInput}
-                  placeholder="Memory"
-                />
-                <label htmlFor="storage">Storage</label>
-                <input
-                  type="text"
-                  id="storage"
-                  name="storage"
-                  value={addProductData.storage}
-                  onChange={handleChangeInput}
-                  placeholder="Storage"
-                />
-              </div>
-            </div>
-
+            {/* Status */}
             <div className="dashboard-add-content-card">
               <h6>Status</h6>
               <div className="add-product-form-container">
-                <label htmlFor="status">Product Status</label>
+                <label>Product Status</label>
                 <select
-                  id="status"
                   name="status"
                   value={addProductData.status}
                   onChange={handleChangeInput}

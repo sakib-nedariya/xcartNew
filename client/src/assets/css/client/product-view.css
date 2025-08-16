@@ -165,6 +165,26 @@
   justify-content: space-between;
   gap: 15px;
 }
+.variant-buttons{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+  margin-top: 6px;
+}
+.variant-buttons .variant-btn{
+  padding: 12px 20px;
+  border: 2px solid var(--primary-border-color);
+  background-color: transparent;
+  font-size: 15px;
+  border-radius: 10px;
+  color: var(--light-black-color);
+}
+.variant-buttons .variant-btn.active{
+  border-color: var(--primary-btn-bg);
+  color: var(--black-color);
+  background-color: var(--white-color);
+}
 
 /* Quantity Selector */
 .product-view-container .quantity-selector {

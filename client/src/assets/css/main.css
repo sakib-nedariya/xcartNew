@@ -237,7 +237,7 @@ button {
   gap: 16px;
 }
 .admin-dashboard-main-header .dashboard-add-product-btn,
-.admin-header-delete-btn {
+.admin-header-delete-btn, .product-variant-add-header button {
   display: flex;
   align-items: center;
   font-family: var(--info-font);
@@ -420,7 +420,8 @@ button {
 }
 .coupon-code-input-max-min-price input,
 .coupon-code-start-expity-date input,
-.coupon-code-input-profile input {
+.coupon-code-input-profile input,
+.product-container-grid input {
   margin-top: 5px;
 }
 

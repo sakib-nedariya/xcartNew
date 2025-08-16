@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 const WishList = () => {
   const { wishlist, removeFromWishlist } = useWishlist();
+  console.log(wishlist);
   const navigate = useNavigate();
 
   const getFirstImage = (image) => {
@@ -20,6 +21,7 @@ const WishList = () => {
       return image;
     }
   };
+
   return (
     <>
       <Navbar />
@@ -63,11 +65,22 @@ const WishList = () => {
                         </span>
                       </td>
                       <td>
-                        <span className="product-old-price">₹89000</span>
+                        {product.discount > 0 && (
+                          <span className="product-old-price">
+                            ₹{product.price}
+                          </span>
+                        )}
                         <span className="product-new-price">
-                          ₹{product.price}
+                          ₹
+                          {product.discount > 0
+                            ? Math.ceil(
+                                product.price -
+                                  (product.price * product.discount) / 100
+                              )
+                            : product.price}
                         </span>
                       </td>
+
                       <td className="product-in-stock">In Stock</td>
                       <td>
                         <button className="primary-btn wishlist_add_to_cart_btn">
@@ -78,7 +91,9 @@ const WishList = () => {
                         <span
                           className="product-remove-btn"
                           title="Remove"
-                          onClick={() => removeFromWishlist(product.id)}
+                          onClick={() =>
+                            removeFromWishlist(product.id, product.variant_id)
+                          }
                         >
                           <MdOutlineCancel />
                         </span>

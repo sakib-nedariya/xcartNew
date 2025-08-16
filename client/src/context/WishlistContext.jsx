@@ -6,7 +6,8 @@ const port = import.meta.env.VITE_SERVER_URL;
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
-  const user_id = localStorage.getItem("id"); 
+  console.log(wishlist)
+  const user_id = localStorage.getItem("id");
 
   const fetchWishlist = async () => {
     if (!user_id) return;
@@ -22,37 +23,38 @@ export const WishlistProvider = ({ children }) => {
     fetchWishlist();
   }, [user_id]);
 
-  // Add product to wishlist
-  const addToWishlist = async (product) => {
+  const addToWishlist = async (product, variant_id) => {
     if (!user_id) {
       alert("Please login first");
       return;
     }
     try {
-      await axios.post(`${port}wishlist`, {
+      const res = await axios.post(`${port}wishlist`, {
         user_id,
         product_id: product.id,
+        variant_id, // ✅ send variant_id
       });
-      setWishlist((prev) => [...prev, product]);
+
+      if (res.data.product) {
+        setWishlist((prev) => [...prev, res.data.product]);
+      }
     } catch (error) {
       console.error("addToWishlist error:", error);
     }
   };
 
-  // Remove product from wishlist
-  const removeFromWishlist = async (product_id) => {
+  const removeFromWishlist = async (product_id, variant_id) => {
     if (!user_id) return;
     try {
-      await axios.delete(`${port}wishlist/${user_id}/${product_id}`);
-      setWishlist((prev) => prev.filter((p) => p.id !== product_id));
+      await axios.delete(`${port}wishlist/${user_id}/${product_id}/${variant_id}`);
+      setWishlist((prev) => prev.filter((p) => !(p.id === product_id && p.variant_id === variant_id)));
     } catch (error) {
       console.error("removeFromWishlist error:", error);
     }
   };
 
-  // Check if product is wishlisted
-  const isWishlisted = (product_id) =>
-    wishlist.some((item) => item.id === product_id);
+  const isWishlisted = (product_id, variant_id) =>
+    wishlist.some((item) => item.id === product_id && item.variant_id === variant_id);
 
   return (
     <WishlistContext.Provider

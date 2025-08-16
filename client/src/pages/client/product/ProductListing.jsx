@@ -15,21 +15,19 @@ const port = import.meta.env.VITE_SERVER_URL;
 const ProductListing = () => {
   const [categoryData, setCategoryData] = useState([]);
   const [productData, setProductData] = useState([]);
+  console.log(productData);
+  const [variants, setVariants] = useState({}); // Store variants by product ID
+  console.log(variants);
   const [activeTab, setActiveTab] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(100000);
-
   const [inputMinPrice, setInputMinPrice] = useState("");
   const [inputMaxPrice, setInputMaxPrice] = useState("");
-
   const [selectedPriceRange, setSelectedPriceRange] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("popular");
-
   const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist();
-
   const navigate = useNavigate();
   const itemsPerPage = 16;
 
@@ -47,6 +45,16 @@ const ProductListing = () => {
       try {
         const res = await axios.get(`${port}getproductdata`);
         setProductData(res.data);
+        // Fetch variants for each product
+        const variantPromises = res.data.map((product) =>
+          axios.get(`${port}product/${product.id}/variants`)
+        );
+        const variantResponses = await Promise.all(variantPromises);
+        const variantsByProduct = {};
+        variantResponses.forEach((response, index) => {
+          variantsByProduct[res.data[index].id] = response.data || [];
+        });
+        setVariants(variantsByProduct);
       } catch (error) {
         console.error("Error fetching product data:", error);
       }
@@ -149,19 +157,39 @@ const ProductListing = () => {
 
   const filteredProducts = productData
     .filter((product) => {
-      const price = parseFloat(product.price);
+      const productVariants = variants[product.id] || [];
+      const price =
+        productVariants.length > 0 ? productVariants[0].price : product.price;
+      const discountedPrice =
+        productVariants.length > 0 && productVariants[0].discount > 0
+          ? Math.ceil(price - (price * productVariants[0].discount) / 100)
+          : price;
       return (
         (!activeTab || product.cate_id === activeTab) &&
-        price >= minPrice &&
-        price <= maxPrice &&
+        discountedPrice >= minPrice &&
+        discountedPrice <= maxPrice &&
         (product.name.toLowerCase().includes(searchQuery) ||
           product.slogan.toLowerCase().includes(searchQuery))
       );
     })
     .sort((a, b) => {
-      if (sortOption === "price-low") return a.price - b.price;
-      if (sortOption === "price-high") return b.price - a.price;
-      return 0;
+      const aVariants = variants[a.id] || [];
+      const bVariants = variants[b.id] || [];
+      const aPrice = aVariants.length > 0 ? aVariants[0].price : a.price;
+      const bPrice = bVariants.length > 0 ? bVariants[0].price : b.price;
+      const aDiscountedPrice =
+        aVariants.length > 0 && aVariants[0].discount > 0
+          ? Math.ceil(aPrice - (aPrice * aVariants[0].discount) / 100)
+          : aPrice;
+      const bDiscountedPrice =
+        bVariants.length > 0 && bVariants[0].discount > 0
+          ? Math.ceil(bPrice - (bPrice * bVariants[0].discount) / 100)
+          : bPrice;
+      if (sortOption === "price-low")
+        return aDiscountedPrice - bDiscountedPrice;
+      if (sortOption === "price-high")
+        return bDiscountedPrice - aDiscountedPrice;
+      return 0; // Popular (default)
     });
 
   const totalItems = filteredProducts.length;
@@ -169,18 +197,26 @@ const ProductListing = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+  console.log(paginatedProducts);
 
   const handleProductClick = (productId) => {
     navigate(`/product/${productId}`);
   };
 
+  const toggleWishlist = (product) => {
+    const productVariants = variants[product.id] || [];
+    const selectedVariant = productVariants[0] || {
+      id: null,
+      price: product.price,
+      discount: 0,
+    };
 
-  // wishlist 
-
-   const toggleWishlist = (product) => {
-    isWishlisted(product.id)
-      ? removeFromWishlist(product.id)
-      : addToWishlist(product);
+    console.log(selectedVariant)
+    if (selectedVariant.id) {
+      isWishlisted(product.id, selectedVariant.id)
+        ? removeFromWishlist(product.id, selectedVariant.id)
+        : addToWishlist(product, selectedVariant.id);
+    }
   };
 
   return (
@@ -315,44 +351,73 @@ const ProductListing = () => {
               }`}
             >
               {paginatedProducts.length > 0 ? (
-                paginatedProducts.map((product, index) => (
-                  <div
-                    className="product-card"
-                    key={index}
-                    onClick={() => handleProductClick(product.id)}
-                  >
-                    <div className="product-img">
+                paginatedProducts.map((product, index) => {
+                  const productVariants = variants[product.id] || [];
+                  const variant = productVariants[0] || {
+                    price: product.price,
+                    discount: 0,
+                  };
+                  
+                  const displayedPrice =
+                    variant.discount > 0
+                      ? Math.ceil(
+                          variant.price -
+                            (variant.price * variant.discount) / 100
+                        )
+                      : variant.price;
+
+                  return (
                     <div
-                    className="heart-icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleWishlist(product)
-                    }}
-            
-                    style={{
-                      color: isWishlisted(product.id) ? "#3858D6" : "#bbb",
-                    }}
-                  >
-                    {isWishlisted(product.id) ? (
-                      <IoMdHeart />
-                    ) : (
-                      <IoMdHeartEmpty />
-                    )}
-                  </div>
-                      <img
-                        src={`/upload/${getFirstImage(product.image)}`}
-                        alt="product_image"
-                      />
-                    </div>
-                    <div className="product-info">
-                      <h6 className="slogan">{product.slogan.slice(0, 35)}</h6>
-                      <div className="price">
-                        <span className="old-price">₹69999</span>
-                        <span className="new-price">₹{product.price}</span>
+                      className="product-card"
+                      key={index}
+                      onClick={() => handleProductClick(product.id)}
+                    >
+                      <div className="product-img">
+                        <div
+                          className="heart-icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleWishlist(product);
+                          }}
+                          style={{
+                            color: isWishlisted(
+                              product.id,
+                              variants[product.id]?.[0]?.id
+                            )
+                              ? "#3858D6"
+                              : "#bbb",
+                          }}
+                        >
+                          {isWishlisted(
+                            product.id,
+                            variants[product.id]?.[0]?.id
+                          ) ? (
+                            <IoMdHeart />
+                          ) : (
+                            <IoMdHeartEmpty />
+                          )}
+                        </div>
+
+                        <img
+                          src={`/upload/${getFirstImage(product.image)}`}
+                          alt="product_image"
+                        />
+                      </div>
+                      <div className="product-info">
+                        <h6 className="slogan">
+                          {product.slogan.slice(0, 35)}
+                        </h6>
+                        <div className="price">
+                          <span className="new-price">₹{displayedPrice}</span>
+                          &nbsp;
+                          {variant.discount > 0 && (
+                            <span className="old-price">₹{variant.price}</span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="no-product-found-wrapper">
                   <img
