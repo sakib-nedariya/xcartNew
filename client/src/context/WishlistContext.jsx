@@ -6,7 +6,6 @@ const port = import.meta.env.VITE_SERVER_URL;
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
-  console.log(wishlist)
   const user_id = localStorage.getItem("id");
 
   const fetchWishlist = async () => {
@@ -32,11 +31,16 @@ export const WishlistProvider = ({ children }) => {
       const res = await axios.post(`${port}wishlist`, {
         user_id,
         product_id: product.id,
-        variant_id, // ✅ send variant_id
+        variant_id,
+        price: product.price,
+        final_price: product.final_price,
+        discount: product.discount,
+        memory: product.memory,
+        storage: product.storage,
       });
 
       if (res.data.product) {
-        setWishlist((prev) => [...prev, res.data.product]);
+        setWishlist((prev) => [res.data.product, ...prev]);
       }
     } catch (error) {
       console.error("addToWishlist error:", error);
@@ -47,7 +51,9 @@ export const WishlistProvider = ({ children }) => {
     if (!user_id) return;
     try {
       await axios.delete(`${port}wishlist/${user_id}/${product_id}/${variant_id}`);
-      setWishlist((prev) => prev.filter((p) => !(p.id === product_id && p.variant_id === variant_id)));
+      setWishlist((prev) =>
+        prev.filter((p) => !(p.id === product_id && p.variant_id === variant_id))
+      );
     } catch (error) {
       console.error("removeFromWishlist error:", error);
     }

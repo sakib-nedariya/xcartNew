@@ -39,6 +39,7 @@ const EditProduct = () => {
     storage: "",
     price: "",
     discount: "",
+    final_price: "",
   });
   const [editingId, setEditingId] = useState(null);
 
@@ -201,16 +202,18 @@ const EditProduct = () => {
   };
 
   const resetVariantForm = () => {
-    setVariantForm({ memory: "", storage: "", price: "", discount: "" });
+    setVariantForm({ memory: "", storage: "", price: "", discount: "", final_price: "" });
     setEditingId(null);
   };
 
   const saveVariant = async () => {
     const { memory, storage, price, discount } = variantForm;
     if (!memory || !storage || !price) {
-      notifyError("Memory, storage and price are required");
+      notifyError("Memory, storage, and price are required");
       return;
     }
+
+    const finalPrice = Math.ceil(price - (price * (discount || 0) / 100));
 
     if (editingId === null) {
       try {
@@ -219,6 +222,7 @@ const EditProduct = () => {
           storage,
           price,
           discount: discount || 0,
+          final_price: finalPrice,
         });
         setVariants((prev) => [...prev, data]);
         resetVariantForm();
@@ -234,10 +238,13 @@ const EditProduct = () => {
           storage,
           price,
           discount: discount || 0,
+          final_price: finalPrice,
         });
         setVariants((prev) =>
           prev.map((v) =>
-            v.id === editingId ? { ...v, memory, storage, price, discount } : v
+            v.id === editingId
+              ? { ...v, memory, storage, price, discount, final_price: finalPrice }
+              : v
           )
         );
         resetVariantForm();
@@ -256,6 +263,7 @@ const EditProduct = () => {
       storage: row.storage ?? "",
       price: String(row.price ?? ""),
       discount: String(row.discount ?? ""),
+      final_price: String(row.final_price ?? ""),
     });
   };
 
@@ -485,6 +493,7 @@ const EditProduct = () => {
                       <th>Storage</th>
                       <th>Price</th>
                       <th>Discount</th>
+                      <th>Final Price</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -496,6 +505,7 @@ const EditProduct = () => {
                           <td>{v.storage}</td>
                           <td>{v.price}</td>
                           <td>{v.discount}</td>
+                          <td>{v.final_price}</td>
                           <td
                             style={{
                               display: "flex",
@@ -513,12 +523,13 @@ const EditProduct = () => {
                               title="Remove"
                               onClick={() => deleteVariant(v.id)}
                             />
+                            
                           </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={5} style={{ textAlign: "center", opacity: 0.7 }}>
+                        <td colSpan={6} style={{ textAlign: "center", opacity: 0.7 }}>
                           No variants yet. Add one above.
                         </td>
                       </tr>
@@ -573,10 +584,10 @@ const EditProduct = () => {
                   value={productData.status}
                   onChange={handleChangeInput}
                 >
-                  <option value="0">Published</option>
-                  <option value="1">Low Stock</option>
-                  <option value="2">Draft</option>
-                  <option value="3">Out of Stock</option>
+                  <option value="1">Published</option>
+                  <option value="2">Low Stock</option>
+                  <option value="3">Draft</option>
+                  <option value="0">Out of Stock</option>
                 </select>
               </div>
             </div>

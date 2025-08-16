@@ -19,15 +19,43 @@ const ProductCategory = () => {
   const navigate = useNavigate();
 
   const toggleWishlist = (product) => {
-    isWishlisted(product.id)
-      ? removeFromWishlist(product.id)
-      : addToWishlist(product);
+    const productVariants = variants[product.id] || [];
+    const variant = productVariants[0] || {};
+    const variant_id = variant.id;
+
+    if (!variant_id) {
+      console.error("No variant available for product:", product.id);
+      return;
+    }
+
+    const productWithVariant = {
+      ...product,
+      price: variant.price || 0,
+      final_price: variant.final_price || 0,
+      discount: variant.discount || 0,
+      memory: variant.memory || "",
+      storage: variant.storage || "",
+    };
+
+    if (isWishlisted(product.id, variant_id)) {
+      removeFromWishlist(product.id, variant_id);
+    } else {
+      addToWishlist(productWithVariant, variant_id);
+    }
   };
 
   const handleAddToCart = (product) => {
     const productVariants = variants[product.id] || [];
     const variant = productVariants[0] || { price: 0 };
-    addToCart({ ...product, price: variant.price });
+    addToCart({
+      ...product,
+      price: variant.price,
+      final_price: variant.final_price || 0,
+      discount: variant.discount || 0,
+      memory: variant.memory || "",
+      storage: variant.storage || "",
+      quantity: 1,
+    });
     if (!addedProductIds.includes(product.id)) {
       setAddedProductIds((prev) => [...prev, product.id]);
       setTimeout(() => {
@@ -132,7 +160,7 @@ const ProductCategory = () => {
               {filteredProducts.slice(0, 5).map((product, index) => {
                 const productVariants = variants[product.id] || [];
                 const variant = productVariants[0] || { price: 0 };
-                const displayedPrice = variant.price || 0;
+                const displayedPrice = variant.final_price || variant.price || 0;
 
                 return (
                   <div key={index} className="product-card">
@@ -140,10 +168,12 @@ const ProductCategory = () => {
                       className="heart-icon"
                       onClick={() => toggleWishlist(product)}
                       style={{
-                        color: isWishlisted(product.id) ? "#3858D6" : "#bbb",
+                        color: isWishlisted(product.id, variant.id)
+                          ? "#3858D6"
+                          : "#bbb",
                       }}
                     >
-                      {isWishlisted(product.id) ? (
+                      {isWishlisted(product.id, variant.id) ? (
                         <IoMdHeart />
                       ) : (
                         <IoMdHeartEmpty />

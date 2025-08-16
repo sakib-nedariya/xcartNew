@@ -88,6 +88,10 @@ const AddProduct = () => {
   };
 
   const handleAddVariant = () => {
+    const price = parseFloat(addProductData.price);
+    const discount = parseFloat(addProductData.discount) || 0;
+    const finalPrice = Math.ceil(price - (price * discount) / 100);
+
     setAddProductData((prev) => ({
       ...prev,
       variants: [
@@ -97,6 +101,7 @@ const AddProduct = () => {
           storage: prev.storage,
           price: prev.price,
           discount: prev.discount,
+          final_price: finalPrice,
         },
       ],
       memory: "",
@@ -106,12 +111,10 @@ const AddProduct = () => {
     }));
   };
 
-  const removeVariant = (index) => {
-    setAddProductData((prev) => ({
-      ...prev,
-      variants: prev.variants.filter((_, i) => i !== index),
-    }));
-  };
+  const removeVariant = (index) => setAddProductData((prev) => ({
+    ...prev,
+    variants: prev.variants.filter((_, i) => i !== index),
+  }));
 
   const saveProductData = async (e) => {
     e.preventDefault();
@@ -377,6 +380,7 @@ const AddProduct = () => {
                         <th>Storage</th>
                         <th>Price</th>
                         <th>Discount</th>
+                        <th>Final Price</th>
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -387,6 +391,7 @@ const AddProduct = () => {
                           <td>{v.storage}</td>
                           <td>{v.price}</td>
                           <td>{v.discount}</td>
+                          <td>{v.final_price}</td>
                           <td className="inner-product-variants-remove">
                             <MdDeleteForever
                               type="button"

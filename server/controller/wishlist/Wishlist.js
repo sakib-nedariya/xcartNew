@@ -3,7 +3,7 @@ const connection = require("../../connection/connection");
 const addToWishlist = (req, res) => {
   const user_id = req.body.user_id || req.body.id;
   const product_id = req.body.product_id || req.params.product_id;
-  const variant_id = req.body.variant_id; // ✅ Get variant_id from request
+  const variant_id = req.body.variant_id;
 
   if (!user_id || !product_id || !variant_id) {
     return res.status(400).json({ message: "user_id, product_id, and variant_id are required" });
@@ -33,6 +33,8 @@ const addToWishlist = (req, res) => {
           p.id, 
           p.slogan, 
           pv.price, 
+          pv.discount,
+          pv.final_price,
           p.image,
           pv.id AS variant_id,
           pv.memory,
@@ -83,23 +85,24 @@ const getWishlistByUserId = (req, res) => {
   }
 
   const sql = `
-SELECT 
-    p.id AS id, 
-    p.slogan, 
-    pv.price, 
-    pv.discount,
-    p.image,
-    pv.id AS variant_id,
-    pv.memory,
-    pv.storage
-FROM wishlist w
-INNER JOIN product p 
-    ON w.product_id = p.id
-INNER JOIN product_variants pv 
-    ON pv.id = w.variant_id
-WHERE w.user_id = ? 
-  AND w.status = 1
-ORDER BY w.id DESC;
+    SELECT 
+      p.id AS id, 
+      p.slogan, 
+      pv.price, 
+      pv.discount,
+      pv.final_price,
+      p.image,
+      pv.id AS variant_id,
+      pv.memory,
+      pv.storage
+    FROM wishlist w
+    INNER JOIN product p 
+      ON w.product_id = p.id
+    INNER JOIN product_variants pv 
+      ON pv.id = w.variant_id
+    WHERE w.user_id = ? 
+      AND w.status = 1
+    ORDER BY w.id DESC;
   `;
 
   connection.query(sql, [user_id], (error, result) => {

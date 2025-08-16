@@ -183,6 +183,7 @@ const ViewProduct = () => {
                       <th>Storage</th>
                       <th>Price</th>
                       <th>Discount</th>
+                      <th>Final Price</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -193,12 +194,13 @@ const ViewProduct = () => {
                           <td>{v.storage}</td>
                           <td>{v.price}</td>
                           <td>{v.discount}</td>
+                          <td>{v.final_price}</td>
                         </tr>
                       ))
                     ) : (
                       <tr>
                         <td
-                          colSpan={4}
+                          colSpan={5}
                           style={{ textAlign: "center", opacity: 0.7 }}
                         >
                           No variants available
