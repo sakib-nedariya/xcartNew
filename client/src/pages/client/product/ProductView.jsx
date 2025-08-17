@@ -42,7 +42,7 @@ const ProductView = () => {
       setProductData([product]);
 
       if (product?.image) {
-        const images = JSON.parse(product.image);
+        const images = JSON.parse(product.image);client 
         if (Array.isArray(images)) {
           setSelectedImage(images[0]);
         }

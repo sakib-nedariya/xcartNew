@@ -356,3 +356,29 @@ button.primary-btn.homepage-add-to-cart-btn {
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.06);
 }
+
+
+
+
+/* service highlights section */
+.service-section{
+  background-color: var(--primary-btn-bg);
+  color: var(--white-color);
+}
+.service-section p{
+  color: #d3d4d7;
+}
+.service-highlights{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.highlight-item{
+  display: flex;
+  gap: 15px;
+}
+
+.highlight-item span{
+  font-size: 40px;
+}

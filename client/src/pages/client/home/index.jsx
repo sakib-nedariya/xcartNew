@@ -6,6 +6,7 @@ import Contact from "./Contact";
 import Navbar from "../layout/Navbar";
 import Footer from "../layout/Footer";
 import Category from "./Category";
+import Highlights from "./Highlights";
 
 const index = () => {
   return (
@@ -15,6 +16,7 @@ const index = () => {
       <Category />
       <ProductCategory />
       <BrandCollection />
+      <Highlights />  
       <Contact />
       <Footer />
     </>
