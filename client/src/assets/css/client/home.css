@@ -376,6 +376,7 @@ button.primary-btn.homepage-add-to-cart-btn {
 
 .highlight-item{
   display: flex;
+  align-items: center;
   gap: 15px;
 }
 
