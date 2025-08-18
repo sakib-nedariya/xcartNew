@@ -24,15 +24,18 @@ const WishList = () => {
   };
 
   const handleAddToCart = (product) => {
-    addToCart({
-      ...product,
-      price: product.price,
-      final_price: product.final_price,
-      discount: product.discount,
-      memory: product.memory,
-      storage: product.storage,
-      quantity: 1,
-    });
+    addToCart(
+      {
+        ...product,
+        price: product.price,
+        final_price: product.final_price,
+        discount: product.discount,
+        memory: product.memory,
+        storage: product.storage,
+      },
+      product.variant_id, 
+      1 // pass quantity
+    );
   };
 
   return (
@@ -102,17 +105,16 @@ const WishList = () => {
                       </td>
                       <td>
                         <div className="price">
-                          <span className="product-new-price">
-                            ₹{product.final_price}
-                          </span>
                           {product.discount > 0 && (
                             <>
-                              &nbsp;
                               <span className="product-old-price">
                                 ₹{product.price}
                               </span>
                             </>
                           )}
+                          <span className="product-new-price">
+                            ₹{product.final_price}
+                          </span>
                         </div>
                       </td>
                       <td className="product-in-stock">In Stock</td>
