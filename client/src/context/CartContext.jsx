@@ -101,6 +101,36 @@ export const CartProvider = ({ children }) => {
     0
   );
 
+
+  // context/CartContext.js
+
+const applyCoupon = async (coupon_code) => {
+  if (!user_id) {
+    notifyError("Please login first");
+    return;
+  }
+  try {
+    const res = await axios.post(`${port}applycoupon`, {
+      coupon_code,
+      subtotal: cartTotals.subtotal,
+    });
+    if (res.data.success) {
+      setCartTotals((prev) => ({
+        ...prev,
+        discount: res.data.discount,
+        total: res.data.total,
+      }));
+      notifySuccess(res.data.message);
+    } else {
+      notifyError(res.data.message);
+    }
+  } catch (error) {
+    console.error("applyCoupon error:", error);
+    notifyError(error.response?.data?.message || "Failed to apply coupon");
+  }
+};
+
+
   return (
     <CartContext.Provider
       value={{
@@ -111,6 +141,7 @@ export const CartProvider = ({ children }) => {
         removeFromCart,
         updateQuantity,
         fetchCart,
+        applyCoupon,
       }}
     >
       {children}
