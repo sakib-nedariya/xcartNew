@@ -6,6 +6,8 @@ import default_profile from "../../../assets/image/default_profile.png";
 import Sidebar from "../layout/Sidebar";
 import Navbar from "../layout/Navbar";
 import axios from "axios";
+import { FaPencil } from "react-icons/fa6";
+import { MdDeleteForever } from "react-icons/md";
 
 const port = import.meta.env.VITE_SERVER_URL;
 
@@ -13,6 +15,7 @@ const ViewProduct = () => {
   const { id } = useParams();
   const [brandData, setBrandData] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
+  const [variants, setVariants] = useState([]);
   const [productData, setProductData] = useState({
     brand_id: "",
     cate_id: "",
@@ -70,10 +73,20 @@ const ViewProduct = () => {
     }
   };
 
+  const getVariants = async () => {
+    try {
+      const res = await axios.get(`${port}product/${id}/variants`);
+      setVariants(res.data || []);
+    } catch (error) {
+      console.error("Error fetching variants:", error);
+    }
+  };
+
   useEffect(() => {
     getBrandData();
     getCategoryData();
     getProductData();
+    getVariants();
   }, [id]);
 
   return (
@@ -161,12 +174,41 @@ const ViewProduct = () => {
             </div>
 
             <div className="dashboard-add-content-card">
-              <h6>Pricing</h6>
-              <div className="add-product-form-container">
-                <label>Base Price</label>
-                <input type="text" value={productData.price} readOnly />
-                <label>Discount (%)</label>
-                <input type="text" value={productData.discount} readOnly />
+              <h6>Memory, Storage, Price & Discount</h6>
+              <div className="dashboard-table-container inner-add-product-variants">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Memory</th>
+                      <th>Storage</th>
+                      <th>Price</th>
+                      <th>Discount</th>
+                      <th>Final Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {variants.length > 0 ? (
+                      variants.map((v) => (
+                        <tr key={v.id}>
+                          <td>{v.memory}</td>
+                          <td>{v.storage}</td>
+                          <td>{v.price}</td>
+                          <td>{v.discount}</td>
+                          <td>{v.final_price}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan={5}
+                          style={{ textAlign: "center", opacity: 0.7 }}
+                        >
+                          No variants available
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -193,16 +235,6 @@ const ViewProduct = () => {
                     </option>
                   ))}
                 </select>
-              </div>
-            </div>
-
-            <div className="dashboard-add-content-card">
-              <h6>Memory & Storage</h6>
-              <div className="add-product-form-container">
-                <label>Memory</label>
-                <input type="text" value={productData.memory} readOnly />
-                <label>Storage</label>
-                <input type="text" value={productData.storage} readOnly />
               </div>
             </div>
 

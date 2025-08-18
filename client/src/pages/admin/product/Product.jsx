@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { IoIosEye } from "react-icons/io";
 import { MdDeleteForever, MdDelete } from "react-icons/md";
 import { IoPencil } from "react-icons/io5";
@@ -19,6 +19,7 @@ const Product = () => {
   const [brandData, setBrandData] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [productData, setProductData] = useState([]);
+  const [variants, setVariants] = useState({}); // Store variants by product ID
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [deleteId, setDeleteId] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -52,6 +53,16 @@ const Product = () => {
     try {
       const res = await axios.get(`${port}getproductdata`);
       setProductData(res.data);
+      // Fetch variants for each product
+      const variantPromises = res.data.map((product) =>
+        axios.get(`${port}product/${product.id}/variants`)
+      );
+      const variantResponses = await Promise.all(variantPromises);
+      const variantsByProduct = {};
+      variantResponses.forEach((response, index) => {
+        variantsByProduct[res.data[index].id] = response.data || [];
+      });
+      setVariants(variantsByProduct);
     } catch (error) {
       console.error("Error fetching product data:", error);
     }
@@ -66,7 +77,7 @@ const Product = () => {
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
-      const allIds = product.map((p) => p.id);
+      const allIds = filteredData.map((p) => p.id); // Use filteredData to select only visible products
       setSelectedProducts(allIds);
     } else {
       setSelectedProducts([]);
@@ -94,7 +105,7 @@ const Product = () => {
       } else if (deleteId) {
         // Single delete
         await axios.delete(`${port}deleteproductdata/${deleteId}`);
-        notifySuccess("Produc Deleted Successfully");
+        notifySuccess("Product Deleted Successfully");
       }
 
       getProductData();
@@ -102,7 +113,7 @@ const Product = () => {
       setDeleteId(null);
       setIsDeleteModalOpen(false);
     } catch (error) {
-      console.error("Error deleting product(s):", error);
+      console.error("Error deleting product:", error);
     }
   };
 
@@ -129,7 +140,7 @@ const Product = () => {
   };
 
   const filteredData = productData.filter((product) => {
-    // First filter by status
+    // Filter by status
     let statusMatch = true;
     if (activeTab === "Published")
       statusMatch = parseInt(product.status, 10) === 1;
@@ -139,7 +150,7 @@ const Product = () => {
     if (activeTab === "Out Of Stock")
       statusMatch = parseInt(product.status, 10) === 0;
 
-    // Then filter by brand
+    // Filter by brand
     let brandMatch = true;
     if (selectedBrand !== "All Brands") {
       brandMatch =
@@ -147,7 +158,7 @@ const Product = () => {
         selectedBrand;
     }
 
-    // Then filter by category
+    // Filter by category
     let categoryMatch = true;
     if (selectedCategory !== "All Categories") {
       categoryMatch =
@@ -272,84 +283,89 @@ const Product = () => {
                 <th>Product</th>
                 <th>Brand</th>
                 <th>Category</th>
-                <th>Discount</th>
-                <th>Price</th>
                 <th>Status</th>
                 <th>Added</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {product.map((product, index) => (
-                <tr key={index}>
-                  <td>
-                    <input
-                      type="checkbox"
-                      style={{ width: "16px", height: "16px" }}
-                      checked={selectedProducts.includes(product.id)}
-                      onChange={() => handleCheckboxChange(product.id)}
-                    />
-                  </td>
-                  <td className="product-info">
-                    <img
-                      src={`/upload/${getFirstImage(product.image)}`}
-                      alt="product_image"
-                    />
-                    <span className="text_ellipsis">{product.slogan}</span>
-                  </td>
-                  <td>
-                    {brandData.find((b) => b.id === product.brand_id)?.name ??
-                      "—"}
-                  </td>
-                  <td>
-                    {categoryData.find((c) => c.id === product.cate_id)?.name ??
-                      "—"}
-                  </td>
-                  <td>{product.discount}%</td>
-                  <td>₹{product.price}</td>
-                  <td>
-                    <span
-                      className={`status ${
-                        product.status === 1
-                          ? "published"
+              {product.map((product, index) => {
+                const productVariants = variants[product.id] || [];
+                const variant = productVariants[0] || { price: 0, discount: 0 };
+                const displayedPrice =
+                  variant.discount > 0
+                    ? Math.ceil(variant.price - (variant.price * variant.discount) / 100)
+                    : variant.price;
+
+                return (
+                  <tr key={index}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        style={{ width: "16px", height: "16px" }}
+                        checked={selectedProducts.includes(product.id)}
+                        onChange={() => handleCheckboxChange(product.id)}
+                      />
+                    </td>
+                    <td className="product-info">
+                      <img
+                        src={`/upload/${getFirstImage(product.image)}`}
+                        alt="product_image"
+                      />
+                      <span className="text_ellipsis">{product.slogan}</span>
+                    </td>
+                    <td>
+                      {brandData.find((b) => b.id === product.brand_id)?.name ??
+                        "—"}
+                    </td>
+                    <td>
+                      {categoryData.find((c) => c.id === product.cate_id)?.name ??
+                        "—"}
+                    </td>
+                    <td>
+                      <span
+                        className={`status ${
+                          product.status === 1
+                            ? "published"
+                            : product.status === 2
+                            ? "low-stock"
+                            : product.status === 3
+                            ? "draft"
+                            : "out-of-stock"
+                        }`}
+                      >
+                        {product.status === 1
+                          ? "Published"
                           : product.status === 2
-                          ? "low-stock"
+                          ? "Low Stock"
                           : product.status === 3
-                          ? "draft"
-                          : "out-of-stock"
-                      }`}
-                    >
-                      {product.status === 1
-                        ? "Published"
-                        : product.status === 2
-                        ? "Low Stock"
-                        : product.status === 3
-                        ? "Draft"
-                        : "Out of Stock"}
-                    </span>
-                  </td>
-                  <td>
-                    {new Date(product.created_date).toLocaleDateString("en-GB")}
-                  </td>
-                  <td className="actions">
-                    <IoPencil
-                      title="Edit"
-                      onClick={() => handleNavigateEdit(product.id)}
-                    />
-                    <IoIosEye
-                      title="View"
-                      onClick={() => handleNavigateView(product.id)}
-                    />
-                    <MdDeleteForever
-                      title="Delete"
-                      onClick={() => {
-                        setDeleteId(product.id); // ✅ Single delete
-                        setIsDeleteModalOpen(true);
-                      }}
-                    />
-                  </td>
-                </tr>
-              ))}
+                          ? "Draft"
+                          : "Out of Stock"}
+                      </span>
+                    </td>
+                    <td>
+                      {new Date(product.created_date).toLocaleDateString("en-GB")}
+                    </td>
+                    <td className="actions">
+                      <IoPencil
+                        title="Edit"
+                        onClick={() => handleNavigateEdit(product.id)}
+                      />
+                      <IoIosEye
+                        title="View"
+                        onClick={() => handleNavigateView(product.id)}
+                      />
+                      <MdDeleteForever
+                        title="Delete"
+                        onClick={() => {
+                          setDeleteId(product.id);
+                          setIsDeleteModalOpen(true);
+                        }}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
 
@@ -371,7 +387,7 @@ const Product = () => {
           title="products"
           onCancel={() => {
             setIsDeleteModalOpen(false);
-            setDeleteId(null); // ✅ Clear deleteId on cancel
+            setDeleteId(null);
           }}
           onDelete={handleProductDelete}
         />

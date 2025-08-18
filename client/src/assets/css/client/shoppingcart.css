@@ -90,7 +90,7 @@
   min-width: 40px;
   font-weight: 600;
 }
-.shopping-cart-container .product-last-price {
+.shopping-cart-container .product-total-price {
   font-size: 15px;
 }
 .shopping-cart-container .product-remove-btn svg {

@@ -148,6 +148,7 @@
 .product-container .product-items .product-info .old-price {
   text-decoration: line-through;
   color: var(--primary-font-color);
+  font-size: 14px;
 }
 
 .product-container .product-items .product-info .new-price {

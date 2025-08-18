@@ -15,21 +15,17 @@ const port = import.meta.env.VITE_SERVER_URL;
 const ProductListing = () => {
   const [categoryData, setCategoryData] = useState([]);
   const [productData, setProductData] = useState([]);
+  const [variants, setVariants] = useState({}); // Store variants by product ID
   const [activeTab, setActiveTab] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(100000);
-
   const [inputMinPrice, setInputMinPrice] = useState("");
   const [inputMaxPrice, setInputMaxPrice] = useState("");
-
   const [selectedPriceRange, setSelectedPriceRange] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("popular");
-
   const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist();
-
   const navigate = useNavigate();
   const itemsPerPage = 16;
 
@@ -47,6 +43,16 @@ const ProductListing = () => {
       try {
         const res = await axios.get(`${port}getproductdata`);
         setProductData(res.data);
+        // Fetch variants for each product
+        const variantPromises = res.data.map((product) =>
+          axios.get(`${port}product/${product.id}/variants`)
+        );
+        const variantResponses = await Promise.all(variantPromises);
+        const variantsByProduct = {};
+        variantResponses.forEach((response, index) => {
+          variantsByProduct[res.data[index].id] = response.data || [];
+        });
+        setVariants(variantsByProduct);
       } catch (error) {
         console.error("Error fetching product data:", error);
       }
@@ -149,19 +155,25 @@ const ProductListing = () => {
 
   const filteredProducts = productData
     .filter((product) => {
-      const price = parseFloat(product.price);
+      const productVariants = variants[product.id] || [];
+      const finalPrice =
+        productVariants.length > 0 ? productVariants[0].final_price : product.price || 0;
       return (
         (!activeTab || product.cate_id === activeTab) &&
-        price >= minPrice &&
-        price <= maxPrice &&
+        finalPrice >= minPrice &&
+        finalPrice <= maxPrice &&
         (product.name.toLowerCase().includes(searchQuery) ||
           product.slogan.toLowerCase().includes(searchQuery))
       );
     })
     .sort((a, b) => {
-      if (sortOption === "price-low") return a.price - b.price;
-      if (sortOption === "price-high") return b.price - a.price;
-      return 0;
+      const aVariants = variants[a.id] || [];
+      const bVariants = variants[b.id] || [];
+      const aFinalPrice = aVariants.length > 0 ? aVariants[0].final_price : a.price || 0;
+      const bFinalPrice = bVariants.length > 0 ? bVariants[0].final_price : b.price || 0;
+      if (sortOption === "price-low") return aFinalPrice - bFinalPrice;
+      if (sortOption === "price-high") return bFinalPrice - aFinalPrice;
+      return 0; // Popular (default)
     });
 
   const totalItems = filteredProducts.length;
@@ -174,13 +186,27 @@ const ProductListing = () => {
     navigate(`/product/${productId}`);
   };
 
+  const toggleWishlist = (product) => {
+    const productVariants = variants[product.id] || [];
+    const selectedVariant = productVariants[0] || {
+      id: null,
+      price: product.price || 0,
+      final_price: product.price || 0,
+      discount: 0,
+    };
 
-  // wishlist 
-
-   const toggleWishlist = (product) => {
-    isWishlisted(product.id)
-      ? removeFromWishlist(product.id)
-      : addToWishlist(product);
+    if (selectedVariant.id) {
+      isWishlisted(product.id, selectedVariant.id)
+        ? removeFromWishlist(product.id, selectedVariant.id)
+        : addToWishlist({
+            ...product,
+            price: selectedVariant.price,
+            final_price: selectedVariant.final_price,
+            discount: selectedVariant.discount,
+            memory: selectedVariant.memory,
+            storage: selectedVariant.storage,
+          }, selectedVariant.id);
+    }
   };
 
   return (
@@ -315,44 +341,66 @@ const ProductListing = () => {
               }`}
             >
               {paginatedProducts.length > 0 ? (
-                paginatedProducts.map((product, index) => (
-                  <div
-                    className="product-card"
-                    key={index}
-                    onClick={() => handleProductClick(product.id)}
-                  >
-                    <div className="product-img">
+                paginatedProducts.map((product, index) => {
+                  const productVariants = variants[product.id] || [];
+                  const variant = productVariants[0] || {
+                    price: product.price || 0,
+                    final_price: product.price || 0,
+                    discount: 0,
+                  };
+
+                  return (
                     <div
-                    className="heart-icon"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleWishlist(product)
-                    }}
-            
-                    style={{
-                      color: isWishlisted(product.id) ? "#3858D6" : "#bbb",
-                    }}
-                  >
-                    {isWishlisted(product.id) ? (
-                      <IoMdHeart />
-                    ) : (
-                      <IoMdHeartEmpty />
-                    )}
-                  </div>
-                      <img
-                        src={`/upload/${getFirstImage(product.image)}`}
-                        alt="product_image"
-                      />
-                    </div>
-                    <div className="product-info">
-                      <h6 className="slogan">{product.slogan.slice(0, 35)}</h6>
-                      <div className="price">
-                        <span className="old-price">₹69999</span>
-                        <span className="new-price">₹{product.price}</span>
+                      className="product-card"
+                      key={index}
+                      onClick={() => handleProductClick(product.id)}
+                    >
+                      <div className="product-img">
+                        <div
+                          className="heart-icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleWishlist(product);
+                          }}
+                          style={{
+                            color: isWishlisted(
+                              product.id,
+                              variants[product.id]?.[0]?.id
+                            )
+                              ? "#3858D6"
+                              : "#bbb",
+                          }}
+                        >
+                          {isWishlisted(
+                            product.id,
+                            variants[product.id]?.[0]?.id
+                          ) ? (
+                            <IoMdHeart />
+                          ) : (
+                            <IoMdHeartEmpty />
+                          )}
+                        </div>
+
+                        <img
+                          src={`/upload/${getFirstImage(product.image)}`}
+                          alt="product_image"
+                        />
+                      </div>
+                      <div className="product-info">
+                        <h6 className="slogan">
+                          {product.slogan.slice(0, 35)}
+                        </h6>
+                        <div className="price">
+                          <span className="new-price">₹{variant.final_price}</span>
+                          &nbsp;
+                          {variant.discount > 0 && (
+                            <span className="old-price">₹{variant.price}</span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <div className="no-product-found-wrapper">
                   <img
