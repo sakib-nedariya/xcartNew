@@ -70,9 +70,18 @@ const ViewCoupon = () => {
                 <input type="text" value={couponData.coupon_code} disabled />
                 <div className="coupon-code-input-max-min-price">
                   <div>
+                    <label htmlFor="discount">Discount Type</label>
+                    <select disabled>
+                      <option value="percentage">Percentage</option>
+                      <option value="rupees">Rupees</option>
+                    </select>
+                  </div>
+                  <div>
                     <label>Discount Percentage (%)</label>
                     <input type="text" value={couponData.discount} disabled />
                   </div>
+                </div>
+                <div className="coupon-code-input-max-min-price">
                   <div>
                     <label>Maximum Price</label>
                     <input type="text" value={couponData.max_price} disabled />

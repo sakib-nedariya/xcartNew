@@ -163,6 +163,13 @@ const EditCoupon = () => {
                 />
                 <div className="coupon-code-input-max-min-price">
                   <div>
+                    <label htmlFor="discount">Discount Type</label>
+                    <select>
+                      <option value="percentage">Percentage</option>
+                      <option value="rupees">Rupees</option>
+                    </select>
+                  </div>
+                  <div>
                     <label htmlFor="discount">Discount Percentage (%)</label>
                     <input
                       type="text"
@@ -173,6 +180,8 @@ const EditCoupon = () => {
                       placeholder="Type product discount here..."
                     />
                   </div>
+                </div>
+                <div className="coupon-code-input-max-min-price">
                   <div>
                     <label htmlFor="maximum-price">Maximum Price</label>
                     <input

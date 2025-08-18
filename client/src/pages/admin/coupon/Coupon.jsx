@@ -198,8 +198,8 @@ const Coupon = () => {
                 </th>
                 <th>Coupon Code</th>
                 <th>Discount</th>
-                <th>Max</th>
                 <th>Min</th>
+                <th>Max</th>
                 <th>Start</th>
                 <th>Expiry</th>
                 <th>Status</th>
@@ -222,8 +222,8 @@ const Coupon = () => {
                   <td className="product-stock-keeping-unit discount">
                     {coupon.discount}%
                   </td>
-                  <td>₹{coupon.max_price}</td>
                   <td>₹{coupon.min_price}</td>
+                  <td>₹{coupon.max_price}</td>
                   <td>
                     {new Date(coupon.start_date).toLocaleDateString("en-GB")}
                   </td>

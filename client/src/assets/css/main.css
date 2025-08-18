@@ -461,11 +461,12 @@ button {
 .coupon-code-start-expity-date,
 .coupon-code-input-profile {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   margin-top: 10px;
   gap: 20px;
 }
 .coupon-code-input-max-min-price input,
+.coupon-code-input-max-min-price select,
 .coupon-code-start-expity-date input,
 .coupon-code-input-profile input,
 .product-container-grid input {
