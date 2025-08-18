@@ -106,13 +106,16 @@
   margin-bottom: 10px;
 }
 .order-summery-product img {
-  width: 60px;
-  height: 60px;
+  width: 55px;
+  height: 55px;
   object-fit: contain;
   margin-right: 15px;
 }
 .order-summery-product-details p {
   font-family: var(--info-font);
+  width: 250px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .order-summery-product-price {
   margin: 8px 0 0;

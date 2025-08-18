@@ -16,7 +16,7 @@ const AuthGuard = ({ children }) => {
     }, []);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div class="spinner"></div>;
     }
 
     if (!isAuthenticated) {

@@ -157,6 +157,52 @@ button {
   border: 2px solid var(--red-color);
 }
 
+/* -------loading-spinner--------- */
+
+.spinner {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  border-radius: 50%;
+  -webkit-mask: radial-gradient(farthest-side, #0000 40%, #6121d1 41%);
+  background: linear-gradient(
+        0deg,
+        rgba(97, 33, 209, 0.5) 50%,
+        rgba(97, 33, 209, 1) 0
+      )
+      center/4.5px 100%,
+    linear-gradient(
+        90deg,
+        rgba(97, 33, 209, 0.25) 50%,
+        rgba(97, 33, 209, 0.75) 0
+      )
+      center/100% 4.5px;
+  background-repeat: no-repeat;
+  animation: spinner-d3o0rx 1s infinite steps(12);
+}
+
+.spinner::before,
+.spinner::after {
+  content: "";
+  grid-area: 1/1;
+  border-radius: 50%;
+  background: inherit;
+  opacity: 0.915;
+  transform: rotate(30deg);
+}
+
+.spinner::after {
+  opacity: 0.83;
+  transform: rotate(60deg);
+}
+
+@keyframes spinner-d3o0rx {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+/* -------loading-spinner--------- */
+
 /* ----Dashboard-design-global-class--- */
 
 .admin-panel-header-div {
@@ -237,7 +283,8 @@ button {
   gap: 16px;
 }
 .admin-dashboard-main-header .dashboard-add-product-btn,
-.admin-header-delete-btn, .product-variant-add-header button {
+.admin-header-delete-btn,
+.product-variant-add-header button {
   display: flex;
   align-items: center;
   font-family: var(--info-font);
@@ -610,4 +657,3 @@ button {
   border: 2px solid var(--white-color);
   border-radius: 50%;
 }
-
