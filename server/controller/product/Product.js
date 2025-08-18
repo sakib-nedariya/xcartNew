@@ -1,11 +1,27 @@
 const connection = require("../../connection/connection");
 
 const getProductData = (req, res) => {
-  const sql =
-    "SELECT * FROM product ORDER BY id DESC";
+  const sql = `
+    SELECT 
+      p.id,
+      p.name,
+      p.image,
+      p.slogan,
+      p.brand_id,
+      b.name AS brand_name,
+      p.cate_id,
+      c.name AS category_name,
+      p.created_date,
+      p.status
+    FROM product p
+    LEFT JOIN brand b ON p.brand_id = b.id
+    LEFT JOIN category c ON p.cate_id = c.id
+    ORDER BY p.id DESC
+  `;
+
   connection.query(sql, (error, result) => {
     if (error) {
-      console.log("Error Getting Data from product Table:", error);
+      console.error("Error fetching merged product data:", error);
       return res.status(500).send("Error fetching product data");
     }
     return res.json(result);
@@ -26,56 +42,80 @@ const getProductDataWithId = (req, res) => {
 };
 
 const addProductData = (req, res) => {
-  const {
-    brand_id,
-    cate_id,
-    slogan,
-    name,
-    description,
-    price,
-    discount,
-    memory,
-    storage,
-    status,
-  } = req.body;
+  try {
+    const { brand_id, cate_id, slogan, name, description, status } = req.body;
 
-  const images = req.files?.map((file) => file.filename) || [];
+    let variants = [];
+    if (req.body.variants) {
+      try {
+        variants = JSON.parse(req.body.variants);
+      } catch (err) {
+        console.error("Invalid variants JSON:", err);
+        return res.status(400).json({ message: "Invalid variants format" });
+      }
+    }
 
-  const brandCheck = "SELECT id FROM brand WHERE id=?";
-  connection.query(brandCheck, [brand_id], (err, brandRes) => {
-    if (err || brandRes.length === 0) return res.status(400).send("Invalid brand_id");
+    const image = req.files?.map((file) => file.filename) || [];
 
-    const cateCheck = "SELECT id FROM category WHERE id=?";
-    connection.query(cateCheck, [cate_id], (err, cateRes) => {
-      if (err || cateRes.length === 0) return res.status(400).send("Invalid cate_id");
+    const productQuery = `
+      INSERT INTO product (brand_id, cate_id, slogan, name, description, image, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
 
-      const sql = `INSERT INTO product 
-        (brand_id, cate_id, slogan, name, description, price, discount, memory, storage, image, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-      const data = [
+    connection.query(
+      productQuery,
+      [
         brand_id,
         cate_id,
         slogan,
         name,
         description,
-        price,
-        discount,
-        memory,
-        storage,
-        JSON.stringify(images),
-        status,
-      ];
-
-      connection.query(sql, data, (err) => {
+        JSON.stringify(image),
+        status || 1,
+      ],
+      (err, result) => {
         if (err) {
-          console.error("Insert error:", err);
-          return res.status(500).send("Insert failed");
+          console.error("Product Insert Error:", err);
+          return res.status(500).json({ message: "Failed to add product", error: err });
         }
-        return res.sendStatus(200);
-      });
-    });
-  });
+
+        const productId = result.insertId;
+
+        if (Array.isArray(variants) && variants.length > 0) {
+          const variantQuery = `
+            INSERT INTO product_variants (product_id, memory, storage, price, discount)
+            VALUES ?
+          `;
+
+          const variantValues = variants.map((v) => [
+            productId,
+            v.memory,
+            v.storage,
+            v.price,
+            v.discount || 0,
+          ]);
+
+          connection.query(variantQuery, [variantValues], (err2) => {
+            if (err2) {
+              console.error("Variant Insert Error:", err2);
+              return res
+                .status(500)
+                .json({ message: "Product added but variants failed", error: err2 });
+            }
+
+            return res
+              .status(200)
+              .json({ message: "Product and variants added successfully" });
+          });
+        } else {
+          return res.status(200).json({ message: "Product added without variants" });
+        }
+      }
+    );
+  } catch (error) {
+    console.error("Unexpected Error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };
 
 const deleteProduct = (req, res) => {
@@ -99,33 +139,18 @@ const deleteProduct = (req, res) => {
 
 const editProductData = (req, res) => {
   const id = req.params.id;
-  const {
-    brand_id,
-    cate_id,
-    slogan,
-    name,
-    description,
-    price,
-    discount,
-    memory,
-    storage,
-    status,
-  } = req.body;
+  const { brand_id, cate_id, slogan, name, description, status } = req.body;
 
   let newImages = req.files?.map((file) => file.filename) || [];
   let existingImages = [];
-
   if (req.body.existingImages) {
-    try {
-      existingImages = JSON.parse(req.body.existingImages);
-    } catch (err) {
-      console.error("Error parsing existing images:", err);
-    }
+    try { existingImages = JSON.parse(req.body.existingImages); } catch { }
   }
-
   const finalImages = JSON.stringify([...existingImages, ...newImages]);
 
-  const sql = `UPDATE product SET brand_id=?, cate_id=?, slogan=?, name=?, description=?, price=?, discount=?, memory=?, storage=?, image=?, status=? WHERE id=?`;
+  const sql = `UPDATE product
+    SET brand_id=?, cate_id=?, slogan=?, name=?, description=?, image=?, status=?
+    WHERE id=?`;
 
   const data = [
     brand_id,
@@ -133,10 +158,6 @@ const editProductData = (req, res) => {
     slogan,
     name,
     description,
-    price,
-    discount,
-    memory,
-    storage,
     finalImages,
     status,
     id,
@@ -151,6 +172,81 @@ const editProductData = (req, res) => {
   });
 };
 
+const getProductVariantData = (req, res) => {
+  const id = req.params.id;
+  const sql = "SELECT * FROM product_variants WHERE product_id = ? ORDER BY id ASC";
+  connection.query(sql, [id], (error, result) => {
+    if (error) {
+      console.log("Error Getting Variants:", error);
+      return res.status(500).send("Error fetching variants");
+    }
+    return res.json(result);
+  });
+};
+
+const addSingleVariant = (req, res) => {
+  const product_id = req.params.id;
+  const { memory, storage, price, discount } = req.body;
+  if (!memory || !storage || !price) {
+    return res.status(400).json({ message: "memory, storage, price required" });
+  }
+  const sql = `
+    INSERT INTO product_variants (product_id, memory, storage, price, discount)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  connection.query(
+    sql,
+    [product_id, memory, storage, price, discount || 0],
+    (err, result) => {
+      if (err) {
+        console.error("Add variant error:", err);
+        return res.status(500).json({ message: "Add variant failed" });
+      }
+      // Return the new variant row (id included)
+      res.json({
+        id: result.insertId,
+        product_id,
+        memory,
+        storage,
+        price,
+        discount: discount || 0,
+      });
+    }
+  );
+};
+
+const updateVariant = (req, res) => {
+  const variantId = req.params.variantId;
+  const { memory, storage, price, discount } = req.body;
+  const sql = `
+    UPDATE product_variants
+    SET memory=?, storage=?, price=?, discount=?
+    WHERE id=?
+  `;
+  connection.query(
+    sql,
+    [memory, storage, price, discount || 0, variantId],
+    (err) => {
+      if (err) {
+        console.error("Update variant error:", err);
+        return res.status(500).json({ message: "Update variant failed" });
+      }
+      res.sendStatus(200);
+    }
+  );
+};
+
+const deleteVariant = (req, res) => {
+  const variantId = req.params.variantId;
+  const sql = "DELETE FROM product_variants WHERE id=?";
+  connection.query(sql, [variantId], (err) => {
+    if (err) {
+      console.error("Delete variant error:", err);
+      return res.status(500).json({ message: "Delete variant failed" });
+    }
+    res.sendStatus(200);
+  });
+};
 
 
-module.exports = { getProductData, addProductData, getProductDataWithId, editProductData, deleteProduct };
+module.exports = { getProductData, addProductData, getProductDataWithId, editProductData, deleteProduct, getProductVariantData, addSingleVariant, updateVariant, deleteVariant };

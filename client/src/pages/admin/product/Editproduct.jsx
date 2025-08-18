@@ -1,24 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, NavLink, useNavigate, useParams } from "react-router-dom";
 import { HiXMark } from "react-icons/hi2";
-import { MdSave } from "react-icons/md";
+import { MdSave, MdDeleteForever } from "react-icons/md";
 import { IoMdArrowDropright } from "react-icons/io";
 import default_profile from "../../../assets/image/default_profile.png";
 import Sidebar from "../layout/Sidebar";
+import { FaPencil } from "react-icons/fa6";
 import Navbar from "../layout/Navbar";
 import axios from "axios";
 import { RxCross2 } from "react-icons/rx";
-import { notifyWarning, notifySuccess } from "../layout/ToastMessage";
+import { notifyError, notifySuccess } from "../layout/ToastMessage";
 
 const port = import.meta.env.VITE_SERVER_URL;
 
 const EditProduct = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+
   const [brandData, setBrandData] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]); // { file, preview }
   const [draggedIndex, setDraggedIndex] = useState(null);
+
   const [productData, setProductData] = useState({
     brand_id: "",
     cate_id: "",
@@ -26,37 +29,51 @@ const EditProduct = () => {
     name: "",
     description: "",
     existingImages: [],
-    price: "",
-    discount: "",
-    memory: "",
-    storage: "",
     status: "",
   });
 
+  // ---------- VARIANTS ----------
+  const [variants, setVariants] = useState([]);
+  const [variantForm, setVariantForm] = useState({
+    memory: "",
+    storage: "",
+    price: "",
+    discount: "",
+    final_price: "",
+  });
+  const [editingId, setEditingId] = useState(null);
+
+  // ---------- LOAD ----------
   useEffect(() => {
     getBrandData();
     getCategoryData();
     getProductData();
+    getVariants();
   }, [id]);
 
   const getBrandData = async () => {
     try {
       const { data } = await axios.get(`${port}getbranddata`);
       setBrandData(data);
-    } catch {}
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const getCategoryData = async () => {
     try {
       const { data } = await axios.get(`${port}getcategorydata`);
       setCategoryData(data);
-    } catch {}
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const getProductData = async () => {
     try {
       const res = await axios.get(`${port}getproductdatawithid/${id}`);
       const fetched = res.data[0];
+
       let imgs = [];
       try {
         imgs = JSON.parse(fetched.image);
@@ -64,15 +81,41 @@ const EditProduct = () => {
       } catch {
         if (fetched.image) imgs = [fetched.image];
       }
-      setProductData({ ...fetched, existingImages: imgs });
-    } catch (err) {}
+
+      setProductData({
+        brand_id: String(fetched.brand_id ?? ""),
+        cate_id: String(fetched.cate_id ?? ""),
+        slogan: fetched.slogan ?? "",
+        name: fetched.name ?? "",
+        description: fetched.description ?? "",
+        status: String(fetched.status ?? "1"),
+        existingImages: imgs,
+      });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  // Combine both existing and new images for unified drag
-  const allImages = [
-    ...productData.existingImages.map((img) => ({ type: "existing", data: img })),
-    ...selectedFiles.map((file) => ({ type: "new", data: file })),
-  ];
+  const getVariants = async () => {
+    try {
+      const { data } = await axios.get(`${port}product/${id}/variants`);
+      setVariants(data || []);
+    } catch (e) {
+      console.error("Error get variants: ", e);
+    }
+  };
+
+  // ---------- IMAGES ----------
+  const allImages = useMemo(
+    () => [
+      ...productData.existingImages.map((img) => ({
+        type: "existing",
+        data: img,
+      })),
+      ...selectedFiles.map((file) => ({ type: "new", data: file })),
+    ],
+    [productData.existingImages, selectedFiles]
+  );
 
   const handleDrop = (dropIndex) => {
     if (draggedIndex === null || draggedIndex === dropIndex) return;
@@ -81,7 +124,6 @@ const EditProduct = () => {
     const [draggedItem] = updatedList.splice(draggedIndex, 1);
     updatedList.splice(dropIndex, 0, draggedItem);
 
-    // Separate back into existing and new files
     const updatedExisting = updatedList
       .filter((i) => i.type === "existing")
       .map((i) => i.data);
@@ -89,12 +131,8 @@ const EditProduct = () => {
       .filter((i) => i.type === "new")
       .map((i) => i.data);
 
-    setProductData((prev) => ({
-      ...prev,
-      existingImages: updatedExisting,
-    }));
+    setProductData((prev) => ({ ...prev, existingImages: updatedExisting }));
     setSelectedFiles(updatedNew);
-
     setDraggedIndex(null);
   };
 
@@ -115,10 +153,11 @@ const EditProduct = () => {
   const removeImage = (index) => {
     const item = allImages[index];
     if (item.type === "existing") {
-      setProductData((p) => ({
-        ...p,
-        existingImages: p.existingImages.filter((_, i) => i !== index),
-      }));
+      setProductData((p) => {
+        const copy = [...p.existingImages];
+        copy.splice(index, 1);
+        return { ...p, existingImages: copy };
+      });
     } else {
       const existingCount = productData.existingImages.length;
       const newIndex = index - existingCount;
@@ -126,8 +165,8 @@ const EditProduct = () => {
     }
   };
 
-  const saveProductData = async (e) => {
-    e.preventDefault();
+  // ---------- PRODUCT SAVE ----------
+  const saveProductInfo = async () => {
     const formData = new FormData();
     const fields = [
       "brand_id",
@@ -135,10 +174,6 @@ const EditProduct = () => {
       "name",
       "slogan",
       "description",
-      "price",
-      "discount",
-      "memory",
-      "storage",
       "status",
     ];
     fields.forEach((key) => formData.append(key, productData[key] || ""));
@@ -152,10 +187,94 @@ const EditProduct = () => {
       await axios.put(`${port}editproductdata/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      notifySuccess("Data Updated Successfully");
+      notifySuccess("Product updated");
       navigate("/admin/product");
     } catch (err) {
       console.error(err);
+      notifyError("Update failed");
+    }
+  };
+
+  // ---------- VARIANT FUNCTIONS ----------
+  const handleVariantFormChange = (e) => {
+    const { name, value } = e.target;
+    setVariantForm((p) => ({ ...p, [name]: value }));
+  };
+
+  const resetVariantForm = () => {
+    setVariantForm({ memory: "", storage: "", price: "", discount: "", final_price: "" });
+    setEditingId(null);
+  };
+
+  const saveVariant = async () => {
+    const { memory, storage, price, discount } = variantForm;
+    if (!memory || !storage || !price) {
+      notifyError("Memory, storage, and price are required");
+      return;
+    }
+
+    const finalPrice = Math.ceil(price - (price * (discount || 0) / 100));
+
+    if (editingId === null) {
+      try {
+        const { data } = await axios.post(`${port}product/${id}/variants`, {
+          memory,
+          storage,
+          price,
+          discount: discount || 0,
+          final_price: finalPrice,
+        });
+        setVariants((prev) => [...prev, data]);
+        resetVariantForm();
+        notifySuccess("Variant added");
+      } catch (e) {
+        console.error(e);
+        notifyError("Add variant failed");
+      }
+    } else {
+      try {
+        await axios.put(`${port}variants/${editingId}`, {
+          memory,
+          storage,
+          price,
+          discount: discount || 0,
+          final_price: finalPrice,
+        });
+        setVariants((prev) =>
+          prev.map((v) =>
+            v.id === editingId
+              ? { ...v, memory, storage, price, discount, final_price: finalPrice }
+              : v
+          )
+        );
+        resetVariantForm();
+        notifySuccess("Variant updated");
+      } catch (e) {
+        console.error(e);
+        notifyError("Update variant failed");
+      }
+    }
+  };
+
+  const startEditVariant = (row) => {
+    setEditingId(row.id);
+    setVariantForm({
+      memory: row.memory ?? "",
+      storage: row.storage ?? "",
+      price: String(row.price ?? ""),
+      discount: String(row.discount ?? ""),
+      final_price: String(row.final_price ?? ""),
+    });
+  };
+
+  const deleteVariant = async (variantId) => {
+    try {
+      await axios.delete(`${port}variants/${variantId}`);
+      setVariants((prev) => prev.filter((v) => v.id !== variantId));
+      notifySuccess("Variant deleted");
+    } catch (e) {
+      console.error(e);
+      notifyError("Delete variant failed");
     }
   };
 
@@ -174,11 +293,17 @@ const EditProduct = () => {
           <div>
             <h5>Edit Product</h5>
             <div className="admin-panel-breadcrumb">
-              <Link to="/admin/dashboard" className="breadcrumb-link active">
+              <Link
+                to="/admin/dashboard"
+                className="breadcrumb-link active"
+              >
                 Dashboard
               </Link>
               <IoMdArrowDropright />
-              <Link to="/admin/product" className="breadcrumb-link active">
+              <Link
+                to="/admin/product"
+                className="breadcrumb-link active"
+              >
                 Product List
               </Link>
               <IoMdArrowDropright />
@@ -194,7 +319,7 @@ const EditProduct = () => {
             </NavLink>
             <button
               type="button"
-              onClick={saveProductData}
+              onClick={saveProductInfo}
               className="primary-btn dashboard-add-product-btn"
             >
               <MdSave /> Save Product
@@ -204,19 +329,18 @@ const EditProduct = () => {
 
         <div className="dashboard-add-content-card-div">
           <div className="dashboard-add-content-left-side">
+            {/* General */}
             <div className="dashboard-add-content-card">
               <h6>General Information</h6>
               <div className="add-product-form-container">
                 <label>Product Name</label>
                 <input
-                  type="text"
                   name="name"
                   value={productData.name}
                   onChange={handleChangeInput}
                 />
                 <label>Slogan</label>
                 <input
-                  type="text"
                   name="slogan"
                   value={productData.slogan}
                   onChange={handleChangeInput}
@@ -230,37 +354,39 @@ const EditProduct = () => {
               </div>
             </div>
 
+            {/* Media */}
             <div className="dashboard-add-content-card">
               <h6>Media</h6>
               <div className="add-product-form-container">
                 <label htmlFor="imageInputFile">Photo</label>
                 <div className="add-product-upload-container">
                   <div className="add-product-upload-icon preview-grid">
-                    {allImages.map((item, index) => (
-                      <div
-                        key={index}
-                        className="image-preview-wrapper"
-                        draggable
-                        onDragStart={() => setDraggedIndex(index)}
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={() => handleDrop(index)}
-                      >
-                        <img
-                          src={
-                            item.type === "existing"
-                              ? `/upload/${item.data}`
-                              : item.data.preview
-                          }
-                          alt={`Preview ${index}`}
-                          className="image-preview"
-                        />
-                        <RxCross2
-                          className="remove-preview-button"
-                          onClick={() => removeImage(index)}
-                        />
-                      </div>
-                    ))}
-                    {allImages.length === 0 && (
+                    {allImages.length > 0 ? (
+                      allImages.map((item, index) => (
+                        <div
+                          key={index}
+                          className="image-preview-wrapper"
+                          draggable
+                          onDragStart={() => setDraggedIndex(index)}
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={() => handleDrop(index)}
+                        >
+                          <img
+                            src={
+                              item.type === "existing"
+                                ? `/upload/${item.data}`
+                                : item.data.preview
+                            }
+                            alt={`Preview ${index}`}
+                            className="image-preview"
+                          />
+                          <RxCross2
+                            className="remove-preview-button"
+                            onClick={() => removeImage(index)}
+                          />
+                        </div>
+                      ))
+                    ) : (
                       <img
                         src={default_profile}
                         alt="Default Preview"
@@ -291,27 +417,130 @@ const EditProduct = () => {
               </div>
             </div>
 
+            {/* Variants */}
             <div className="dashboard-add-content-card">
-              <h6>Pricing</h6>
-              <div className="add-product-form-container">
-                <label>Base Price</label>
-                <input
-                  type="text"
-                  name="price"
-                  value={productData.price}
-                  onChange={handleChangeInput}
-                />
-                <label>Discount (%)</label>
-                <input
-                  type="text"
-                  name="discount"
-                  value={productData.discount}
-                  onChange={handleChangeInput}
-                />
+              <div
+                className="product-variant-add-header"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <h6 style={{ paddingBottom: "0px" }}>
+                  Memory, Storage, Price & Discount
+                </h6>
+                <div style={{ display: "flex", gap: "10px" }}>
+                  {editingId && (
+                    <button
+                      type="button"
+                      className="cancel-btn"
+                      onClick={resetVariantForm}
+                    >
+                      Cancel Edit
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="primary-btn"
+                    onClick={saveVariant}
+                  >
+                    {editingId ? "Save Changes" : "Add Variant"}
+                  </button>
+                </div>
+              </div>
+
+              <div className="add-product-form-container product-container-grid">
+                <div>
+                  <label>Memory (RAM)</label>
+                  <input
+                    name="memory"
+                    value={variantForm.memory}
+                    onChange={handleVariantFormChange}
+                  />
+                </div>
+                <div>
+                  <label>Storage</label>
+                  <input
+                    name="storage"
+                    value={variantForm.storage}
+                    onChange={handleVariantFormChange}
+                  />
+                </div>
+                <div>
+                  <label>Price</label>
+                  <input
+                    name="price"
+                    value={variantForm.price}
+                    onChange={handleVariantFormChange}
+                  />
+                </div>
+                <div>
+                  <label>Discount (%)</label>
+                  <input
+                    name="discount"
+                    value={variantForm.discount}
+                    onChange={handleVariantFormChange}
+                  />
+                </div>
+              </div>
+
+              <div className="dashboard-table-container inner-add-product-variants">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Memory</th>
+                      <th>Storage</th>
+                      <th>Price</th>
+                      <th>Discount</th>
+                      <th>Final Price</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {variants.length > 0 ? (
+                      variants.map((v) => (
+                        <tr key={v.id}>
+                          <td>{v.memory}</td>
+                          <td>{v.storage}</td>
+                          <td>{v.price}</td>
+                          <td>{v.discount}</td>
+                          <td>{v.final_price}</td>
+                          <td
+                            style={{
+                              display: "flex",
+                              gap: 10,
+                              alignItems: "center",
+                            }}
+                          >
+                            <FaPencil
+                              style={{ cursor: "pointer", fontSize: "16px" }}
+                              title="Edit"
+                              onClick={() => startEditVariant(v)}
+                            />
+                            <MdDeleteForever
+                              style={{ fontSize: "20px", cursor: "pointer" }}
+                              title="Remove"
+                              onClick={() => deleteVariant(v.id)}
+                            />
+                            
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={6} style={{ textAlign: "center", opacity: 0.7 }}>
+                          No variants yet. Add one above.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
 
+          {/* Right Side */}
           <div className="dashboard-add-content-right-side">
             <div className="dashboard-add-content-card">
               <h6>Brand & Category</h6>
@@ -329,6 +558,7 @@ const EditProduct = () => {
                     </option>
                   ))}
                 </select>
+
                 <label>Select Category</label>
                 <select
                   name="cate_id"
@@ -342,26 +572,6 @@ const EditProduct = () => {
                     </option>
                   ))}
                 </select>
-              </div>
-            </div>
-
-            <div className="dashboard-add-content-card">
-              <h6>Memory & Storage</h6>
-              <div className="add-product-form-container">
-                <label>Memory (RAM)</label>
-                <input
-                  type="text"
-                  name="memory"
-                  value={productData.memory}
-                  onChange={handleChangeInput}
-                />
-                <label>Storage</label>
-                <input
-                  type="text"
-                  name="storage"
-                  value={productData.storage}
-                  onChange={handleChangeInput}
-                />
               </div>
             </div>
 

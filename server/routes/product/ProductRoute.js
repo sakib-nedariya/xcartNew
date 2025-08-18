@@ -9,4 +9,11 @@ router.route("/addproductdata").post(upload.array("images"), Product.addProductD
 router.route("/editproductdata/:id").put(upload.array("images"), Product.editProductData);
 router.route("/deleteproductdata/:id").delete(Product.deleteProduct);
 
+router.get("/product/:id/variants", Product.getProductVariantData);
+router.post("/product/:id/variants", Product.addSingleVariant);
+router.put("/variants/:variantId", Product.updateVariant);
+router.delete("/variants/:variantId", Product.deleteVariant);
+
+
+
 module.exports = router;
