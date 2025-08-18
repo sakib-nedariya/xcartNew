@@ -94,7 +94,7 @@ const ShoppingCart = () => {
                         </span>
                       </td>
                       <td>
-                        <span className="product-variant">
+                        <span className="product-variant" style={{fontSize:"13px"}}>
                           {item.memory || "N/A"}/{item.storage || "N/A"} GB
                         </span>
                       </td>

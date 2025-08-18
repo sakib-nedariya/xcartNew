@@ -51,7 +51,7 @@
   max-width: 65px;
   object-fit: contain;
   height: 65px;
-  margin: 0 8px 0 14px;
+  margin: 0 8px;
 }
 .product-old-price {
   text-decoration: line-through;
@@ -77,7 +77,7 @@
 }
 .shopping-cart-product-name {
   font-size: 15px;
-  max-width: 300px;
+  max-width: 240px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
