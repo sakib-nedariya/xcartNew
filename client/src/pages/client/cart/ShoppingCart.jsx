@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { HiMinusSm, HiPlusSm } from "react-icons/hi";
 import { MdOutlineCancel } from "react-icons/md";
@@ -10,7 +10,17 @@ import { useCart } from "../../../context/CartContext";
 
 const ShoppingCart = () => {
   const navigate = useNavigate();
-  const { cartItems, cartTotals, updateQuantity, removeFromCart, fetchCart } = useCart();
+ const { cartItems, cartTotals, updateQuantity, removeFromCart, fetchCart, applyCoupon } = useCart();
+const [couponCode, setCouponCode] = useState("");
+
+const handleApplyCoupon = () => {
+  if (!couponCode) {
+    alert("Please enter coupon code");
+    return;
+  }
+  applyCoupon(couponCode);
+};
+
 
   useEffect(() => {
     fetchCart();
@@ -155,16 +165,23 @@ const ShoppingCart = () => {
             </div>
 
             <div className="shopping-cart-price-card coupon-code">
-              <h6>Coupon Code</h6>
-              <input
-                type="text"
-                className="coupon-input"
-                placeholder="Coupon Code"
-              />
-              <button type="button" className="apply-coupon-btn secondary-btn">
-                APPLY COUPON
-              </button>
-            </div>
+  <h6>Coupon Code</h6>
+  <input
+    type="text"
+    className="coupon-input"
+    placeholder="Coupon Code"
+    value={couponCode}
+    onChange={(e) => setCouponCode(e.target.value)}
+  />
+  <button
+    type="button"
+    className="apply-coupon-btn secondary-btn"
+    onClick={handleApplyCoupon}
+  >
+    APPLY COUPON
+  </button>
+</div>
+
           </div>
         </div>
       </section>

@@ -9,4 +9,10 @@ router.route("/createcoupondata").post(Coupon.createCouponData);
 router.route("/editcoupondata/:id").put(Coupon.editCouponData);
 router.route("/deletecoupondata/:id").delete(Coupon.deleteCoupon);
 
+
+// routes/coupon/CouponRoute.js
+
+router.route("/applycoupon").post(Coupon.applyCoupon);
+
+
 module.exports = router;
