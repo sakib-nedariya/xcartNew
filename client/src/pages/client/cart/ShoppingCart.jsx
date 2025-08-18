@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { HiMinusSm, HiPlusSm } from "react-icons/hi";
 import { MdOutlineCancel } from "react-icons/md";
@@ -10,27 +10,33 @@ import { useCart } from "../../../context/CartContext";
 
 const ShoppingCart = () => {
   const navigate = useNavigate();
-  const { cartItems, addToCart, removeFromCart } = useCart();
-
-  const [quantities, setQuantities] = useState({});
+  const { cartItems, cartTotals, updateQuantity, removeFromCart, fetchCart } = useCart();
 
   useEffect(() => {
-    const initialQuantities = {};
-    cartItems.forEach((item) => {
-      initialQuantities[item.id] = item.quantity || 1;
-    });
-    setQuantities(initialQuantities);
-  }, [cartItems]);
+    fetchCart();
+  }, [fetchCart]);
 
   const handleIncrement = (product) => {
-    setQuantities((prev) => ({
-      ...prev,
-      [product.id]: (prev[product.id] || 1) + 1,
-    }));
-    addToCart(product);
+    if (product?.id && product?.variant_id && product?.quantity) {
+      updateQuantity(product.id, product.variant_id, product.quantity + 1);
+    }
+  };
+
+  const handleDecrement = (product) => {
+    if (product?.quantity <= 1) return;
+    if (product?.id && product?.variant_id) {
+      updateQuantity(product.id, product.variant_id, product.quantity - 1);
+    }
+  };
+
+  const handleRemove = (product) => {
+    if (product?.id && product?.variant_id) {
+      removeFromCart(product.id, product.variant_id);
+    }
   };
 
   const getFirstImage = (image) => {
+    if (!image) return "/path-to-default-image/default.png";
     if (Array.isArray(image)) return image[0];
     try {
       const parsed = JSON.parse(image);
@@ -40,26 +46,7 @@ const ShoppingCart = () => {
     }
   };
 
-  const handleDecrement = (product) => {
-    setQuantities((prev) => {
-      const currentQty = prev[product.id] || 1;
-      if (currentQty <= 1) return prev;
-      return { ...prev, [product.id]: currentQty - 1 };
-    });
-  };
-
-  const handleRemove = (id) => {
-    removeFromCart(id);
-  };
-
-  const getSubtotal = () => {
-    return cartItems.reduce((total, item) => {
-      const qty = quantities[item.id] || 1;
-      return total + qty * item.price;
-    }, 0);
-  };
-
-  const handlecheckoutpagenavigate = () => {
+  const handleCheckoutPageNavigate = () => {
     navigate("/checkout");
   };
 
@@ -74,49 +61,57 @@ const ShoppingCart = () => {
               <thead>
                 <tr>
                   <th>Products</th>
+                  <th>Variant</th>
                   <th>Price</th>
                   <th>Quantity</th>
                   <th>Sub-Total</th>
                 </tr>
               </thead>
               <tbody>
-                {cartItems.length === 0 ? (
+                {!Array.isArray(cartItems) || cartItems.length === 0 ? (
                   <tr>
-                    <td colSpan={4} align="center">
-                      <img src={noItemFound} />
+                    <td colSpan={5} align="center">
+                      <img src={noItemFound} alt="No items in cart" />
                     </td>
                   </tr>
                 ) : (
                   cartItems.map((item) => (
-                    <tr key={item.id}>
+                    <tr key={`${item.id}-${item.variant_id}`}>
                       <td className="shopping-cart-container-product">
                         <span
                           className="product-remove-btn"
                           title="Remove"
-                          onClick={() => handleRemove(item.id)}
+                          onClick={() => handleRemove(item)}
                         >
                           <MdOutlineCancel />
                         </span>
                         <img
-                      src={`/upload/${getFirstImage(item.image)}`}
-                      alt={item.slogan}
-                    />
+                          src={`/upload/${getFirstImage(item.image)}`}
+                          alt={item.slogan || "Product"}
+                        />
                         <span className="shopping-cart-product-name">
-                          {item.slogan}
+                          {item.slogan || "Unknown Product"}
                         </span>
                       </td>
                       <td>
-                        <span className="product-new-price">₹{item.price}</span>
+                        <span className="product-variant">
+                          {item.memory || "N/A"}/{item.storage || "N/A"} GB
+                        </span>
+                      </td>
+                      <td>
+                        <span className="product-new-price">
+                          ₹{item.final_price || item.price || 0}
+                        </span>
                       </td>
                       <td>
                         <div className="product_quantity">
                           <HiMinusSm onClick={() => handleDecrement(item)} />
-                          <span>{quantities[item.id] || 1}</span>
+                          <span>{item.quantity || 0}</span>
                           <HiPlusSm onClick={() => handleIncrement(item)} />
                         </div>
                       </td>
-                      <td className="product-last-price">
-                        ₹{(quantities[item.id] || 1) * item.price}
+                      <td className="product-total-price">
+                        ₹{item.total_price || 0}
                       </td>
                     </tr>
                   ))
@@ -130,7 +125,7 @@ const ShoppingCart = () => {
               <h6>Cart Totals</h6>
               <div className="shopping-cart-price-row">
                 <span>Sub-total</span>
-                <span className="shopping-cart-price">₹{getSubtotal()}</span>
+                <span className="shopping-cart-price">₹{cartTotals.subtotal || 0}</span>
               </div>
               <div className="shopping-cart-price-row">
                 <span>Shipping</span>
@@ -138,22 +133,22 @@ const ShoppingCart = () => {
               </div>
               <div className="shopping-cart-price-row">
                 <span>Discount</span>
-                <span className="shopping-cart-price">₹999</span>
+                <span className="shopping-cart-price">₹{cartTotals.discount || 999}</span>
               </div>
               <div className="shopping-cart-price-row">
                 <span>Tax</span>
-                <span className="shopping-cart-price">₹2999</span>
+                <span className="shopping-cart-price">₹{cartTotals.tax || 2999}</span>
               </div>
               <div className="shopping-cart-price-row product-total-price">
                 <span>Total</span>
                 <span>
-                  <b>₹{getSubtotal() + 2999 - 999}</b>
+                  <b>₹{cartTotals.total || 0}</b>
                 </span>
               </div>
               <button
                 type="button"
                 className="shopping-cartcheckout-btn primary-btn"
-                onClick={handlecheckoutpagenavigate}
+                onClick={handleCheckoutPageNavigate}
               >
                 PROCEED TO CHECKOUT
               </button>

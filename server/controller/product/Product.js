@@ -83,7 +83,7 @@ const addProductData = (req, res) => {
 
         if (Array.isArray(variants) && variants.length > 0) {
           const variantQuery = `
-            INSERT INTO product_variants (product_id, memory, storage, price, discount, final_price)
+            INSERT INTO product_variants (product_id, memory, storage, price, discount)
             VALUES ?
           `;
 
@@ -93,7 +93,6 @@ const addProductData = (req, res) => {
             v.storage,
             v.price,
             v.discount || 0,
-            v.final_price || Math.ceil(v.price - (v.price * (v.discount || 0) / 100)),
           ]);
 
           connection.query(variantQuery, [variantValues], (err2) => {
@@ -191,19 +190,19 @@ const addSingleVariant = (req, res) => {
   if (!memory || !storage || !price) {
     return res.status(400).json({ message: "memory, storage, price required" });
   }
-  const final_price = Math.ceil(price - (price * (discount || 0) / 100));
   const sql = `
-    INSERT INTO product_variants (product_id, memory, storage, price, discount, final_price)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO product_variants (product_id, memory, storage, price, discount)
+    VALUES (?, ?, ?, ?, ?)
   `;
   connection.query(
     sql,
-    [product_id, memory, storage, price, discount || 0, final_price],
+    [product_id, memory, storage, price, discount || 0],
     (err, result) => {
       if (err) {
         console.error("Add variant error:", err);
         return res.status(500).json({ message: "Add variant failed" });
       }
+      // Return the new variant row (id included)
       res.json({
         id: result.insertId,
         product_id,
@@ -211,7 +210,6 @@ const addSingleVariant = (req, res) => {
         storage,
         price,
         discount: discount || 0,
-        final_price,
       });
     }
   );
@@ -220,15 +218,14 @@ const addSingleVariant = (req, res) => {
 const updateVariant = (req, res) => {
   const variantId = req.params.variantId;
   const { memory, storage, price, discount } = req.body;
-  const final_price = Math.ceil(price - (price * (discount || 0) / 100));
   const sql = `
     UPDATE product_variants
-    SET memory=?, storage=?, price=?, discount=?, final_price=?
+    SET memory=?, storage=?, price=?, discount=?
     WHERE id=?
   `;
   connection.query(
     sql,
-    [memory, storage, price, discount || 0, final_price, variantId],
+    [memory, storage, price, discount || 0, variantId],
     (err) => {
       if (err) {
         console.error("Update variant error:", err);
@@ -250,5 +247,6 @@ const deleteVariant = (req, res) => {
     res.sendStatus(200);
   });
 };
+
 
 module.exports = { getProductData, addProductData, getProductDataWithId, editProductData, deleteProduct, getProductVariantData, addSingleVariant, updateVariant, deleteVariant };

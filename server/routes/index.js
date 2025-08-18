@@ -12,6 +12,7 @@ const userAdminRoute = require("../routes/user/userAdminRoute.js");
 const UserInquiryRoute = require("../routes/contact_inquiry/ContactInquiryRoute.js");
 const userAddressRoute = require("../routes/user/UserAddressRoute.js");
 const wishlistRoute = require("../routes/wishlist/wishlistRoute.js");
+const shoppingCartRoute = require("../routes/shoppingCart/ShoppingCartRoute.js");
 
 app.use("/", ManageAdminRoute);
 app.use("/", CustomerRoute);
@@ -24,5 +25,6 @@ app.use("/", userAdminRoute);
 app.use("/", UserInquiryRoute);
 app.use("/", userAddressRoute);
 app.use("/", wishlistRoute);
+app.use("/", shoppingCartRoute);
 
 module.exports = app

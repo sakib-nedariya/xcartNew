@@ -12,7 +12,7 @@ const ProductCategory = () => {
   const [activeTab, setActiveTab] = useState(null);
   const [categoryData, setCategoryData] = useState([]);
   const [productData, setProductData] = useState([]);
-  const [variants, setVariants] = useState({}); // Store variants by product ID
+  const [variants, setVariants] = useState({});
   const { addToCart } = useCart();
   const [addedProductIds, setAddedProductIds] = useState([]);
   const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist();
@@ -20,49 +20,54 @@ const ProductCategory = () => {
 
   const toggleWishlist = (product) => {
     const productVariants = variants[product.id] || [];
-    const variant = productVariants[0] || {};
-    const variant_id = variant.id;
-
-    if (!variant_id) {
-      console.error("No variant available for product:", product.id);
+    const defaultVariant = productVariants[0]; // Select the first variant as default
+    if (!defaultVariant) {
+      console.error("No variants available for this product");
       return;
     }
 
-    const productWithVariant = {
-      ...product,
-      price: variant.price || 0,
-      final_price: variant.final_price || 0,
-      discount: variant.discount || 0,
-      memory: variant.memory || "",
-      storage: variant.storage || "",
-    };
-
-    if (isWishlisted(product.id, variant_id)) {
-      removeFromWishlist(product.id, variant_id);
+    if (isWishlisted(product.id, defaultVariant.id)) {
+      removeFromWishlist(product.id, defaultVariant.id);
     } else {
-      addToWishlist(productWithVariant, variant_id);
+      addToWishlist(
+        {
+          ...product,
+          price: defaultVariant.price,
+          final_price: defaultVariant.final_price || defaultVariant.price,
+          discount: defaultVariant.discount || 0,
+          memory: defaultVariant.memory,
+          storage: defaultVariant.storage,
+        },
+        defaultVariant.id
+      );
     }
   };
 
   const handleAddToCart = (product) => {
-    const productVariants = variants[product.id] || [];
-    const variant = productVariants[0] || { price: 0 };
-    addToCart({
+  const productVariants = variants[product.id] || [];
+  const variant = productVariants[0] || { id: null, price: 0 };
+  if (!variant.id) {
+    console.error("No variant available for this product");
+    return;
+  }
+  addToCart(
+    {
       ...product,
       price: variant.price,
-      final_price: variant.final_price || 0,
+      final_price: variant.final_price || variant.price,
       discount: variant.discount || 0,
-      memory: variant.memory || "",
-      storage: variant.storage || "",
-      quantity: 1,
-    });
-    if (!addedProductIds.includes(product.id)) {
-      setAddedProductIds((prev) => [...prev, product.id]);
-      setTimeout(() => {
-        setAddedProductIds((prev) => prev.filter((id) => id !== product.id));
-      }, 2000);
-    }
-  };
+      memory: variant.memory,
+      storage: variant.storage,
+    },
+    variant.id
+  );
+  if (!addedProductIds.includes(product.id)) {
+    setAddedProductIds((prev) => [...prev, product.id]);
+    setTimeout(() => {
+      setAddedProductIds((prev) => prev.filter((id) => id !== product.id));
+    }, 2000);
+  }
+};
 
   const handleProductClick = (productId) => {
     navigate(`/product/${productId}`);
@@ -160,7 +165,7 @@ const ProductCategory = () => {
               {filteredProducts.slice(0, 5).map((product, index) => {
                 const productVariants = variants[product.id] || [];
                 const variant = productVariants[0] || { price: 0 };
-                const displayedPrice = variant.final_price || variant.price || 0;
+                const displayedPrice = variant.price || 0;
 
                 return (
                   <div key={index} className="product-card">

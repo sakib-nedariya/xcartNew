@@ -47,18 +47,21 @@ const ProductView = () => {
   };
 
   const handleAddToCart = () => {
-    if (selectedVariant) {
-      addToCart({
+  if (selectedVariant) {
+    addToCart(
+      {
         ...productData,
         price: selectedVariant.price,
         final_price: selectedVariant.final_price,
         discount: selectedVariant.discount,
         memory: selectedVariant.memory,
         storage: selectedVariant.storage,
-        quantity,
-      });
-    }
-  };
+      },
+      selectedVariant.id,
+      quantity
+    );
+  }
+};
 
   const getProductData = async () => {
     try {
@@ -84,14 +87,14 @@ const ProductView = () => {
       const res = await axios.get(`${port}product/${id}/variants`);
       const variantData = res.data || [];
       setVariants(variantData);
-      // Check if variant_id is passed in state
+
       if (state?.variant_id && variantData.length > 0) {
         const matchedVariant = variantData.find(
           (variant) => variant.id === state.variant_id
         );
-        setSelectedVariant(matchedVariant || variantData[0]); // Fallback to first variant if not found
+        setSelectedVariant(matchedVariant || variantData[0]);
       } else if (variantData.length > 0) {
-        setSelectedVariant(variantData[0]); // Default to first variant
+        setSelectedVariant(variantData[0]);
       }
     } catch (error) {
       console.error("Error fetching variants:", error);
@@ -176,7 +179,9 @@ const ProductView = () => {
 
               <div className="price-discount">
                 <div className="price">
-                  <span className="new-price">₹{selectedVariant.final_price}</span>
+                  <span className="new-price">
+                    ₹{selectedVariant.final_price}
+                  </span>
                   {selectedVariant.discount > 0 && (
                     <span className="old-price">₹{selectedVariant.price}</span>
                   )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { CgTrash } from "react-icons/cg";
 import { HiXMark } from "react-icons/hi2";
 
@@ -7,16 +7,15 @@ const DeleteModal = ({ title, onCancel, onDelete }) => {
   const [userInput, setUserInput] = useState("");
   const [error, setError] = useState("");
 
-
   useEffect(() => {
     generateCaptcha();
   }, []);
 
   const generateCaptcha = () => {
-    const randomCaptcha = Math.floor(1000 + Math.random() * 9000).toString(); 
+    const randomCaptcha = Math.floor(1000 + Math.random() * 9000).toString();
     setCaptcha(randomCaptcha);
     setUserInput("");
-    setError(""); 
+    setError("");
   };
 
   const handleCaptchaChange = (e) => {
@@ -26,7 +25,7 @@ const DeleteModal = ({ title, onCancel, onDelete }) => {
 
   const handleDelete = () => {
     if (userInput === captcha) {
-      onDelete(); 
+      onDelete();
     } else {
       setError("Incorrect CAPTCHA value. Please try again.");
     }
@@ -47,7 +46,13 @@ const DeleteModal = ({ title, onCancel, onDelete }) => {
             placeholder="Enter captcha code..."
             value={userInput}
             onChange={handleCaptchaChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleDelete();
+              }
+            }}
           />
+
           {error && <span className="error-message">{error}</span>}
         </div>
         <div className="modal-container-buttons">
