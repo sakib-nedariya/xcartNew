@@ -70,10 +70,8 @@ const ProductView = () => {
       setProductData(product);
 
       if (product?.image) {
-        const images = Array.isArray(product.image)
-          ? product.image
-          : JSON.parse(product.image);
-        if (Array.isArray(images) && images.length > 0) {
+        const images = JSON.parse(product.image);
+        if (Array.isArray(images)) {
           setSelectedImage(images[0]);
         }
       }
