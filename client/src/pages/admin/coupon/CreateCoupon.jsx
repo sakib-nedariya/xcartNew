@@ -14,6 +14,7 @@ const CreateCoupon = () => {
   const navigate = useNavigate();
   const [createCoupon, setCreateCoupon] = useState({
     coupon_code: "",
+    discount_type: "percentage",
     discount: "",
     max_price: "",
     min_price: "",
@@ -136,7 +137,23 @@ const CreateCoupon = () => {
                 />
                 <div className="coupon-code-input-max-min-price">
                   <div>
-                    <label htmlFor="discount">Discount Percentage (%)</label>
+                    <label htmlFor="discount_type">Discount Type</label>
+                    <select
+                      id="discount_type"
+                      name="discount_type"
+                      value={createCoupon.discount_type}
+                      onChange={handleChangeInput}
+                    >
+                      <option value="percentage">Percentage</option>
+                      <option value="rupees">Rupees</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="discount">
+                      {createCoupon.discount_type === "percentage"
+                        ? "Discount Percentage (%)"
+                        : "Discount Amount (₹)"}
+                    </label>
                     <input
                       type="text"
                       id="discount"
@@ -144,6 +161,19 @@ const CreateCoupon = () => {
                       value={createCoupon.discount}
                       onChange={handleChangeInput}
                       placeholder="Type product discount here..."
+                    />
+                  </div>
+                </div>
+                <div className="coupon-code-input-max-min-price">
+                  <div>
+                    <label htmlFor="minimum-price">Minimum Price</label>
+                    <input
+                      type="text"
+                      id="minimum-price"
+                      name="min_price"
+                      value={createCoupon.min_price}
+                      onChange={handleChangeInput}
+                      placeholder="Type products min price here..."
                     />
                   </div>
                   <div>
@@ -157,18 +187,8 @@ const CreateCoupon = () => {
                       placeholder="Type products max price here..."
                     />
                   </div>
-                  <div>
-                    <label htmlFor="minimum-price">Minimum Price</label>
-                    <input
-                      type="text"
-                      id="minimum-price"
-                      name="min_price"
-                      value={createCoupon.min_price}
-                      onChange={handleChangeInput}
-                      placeholder="Type products min price here..."
-                    />
-                  </div>
                 </div>
+
                 <div className="coupon-code-start-expity-date">
                   <div>
                     <label htmlFor="start-date">Start Date</label>

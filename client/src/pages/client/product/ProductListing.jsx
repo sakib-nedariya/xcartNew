@@ -15,11 +15,11 @@ const port = import.meta.env.VITE_SERVER_URL;
 const ProductListing = () => {
   const [categoryData, setCategoryData] = useState([]);
   const [productData, setProductData] = useState([]);
-  const [variants, setVariants] = useState({}); // Store variants by product ID
+  const [variants, setVariants] = useState({}); 
   const [activeTab, setActiveTab] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(100000);
+  const [maxPrice, setMaxPrice] = useState(Infinity);
   const [inputMinPrice, setInputMinPrice] = useState("");
   const [inputMaxPrice, setInputMaxPrice] = useState("");
   const [selectedPriceRange, setSelectedPriceRange] = useState("all");
@@ -82,7 +82,7 @@ const ProductListing = () => {
   const handlePriceKeyDown = (e) => {
     if (e.key === "Enter") {
       const min = parseInt(inputMinPrice) || 0;
-      const max = parseInt(inputMaxPrice) || 100000;
+      const max = parseInt(inputMaxPrice) || Infinity;
       setMinPrice(min);
       setMaxPrice(max);
       setCurrentPage(1);
@@ -98,7 +98,7 @@ const ProductListing = () => {
     switch (value) {
       case "all":
         setMinPrice(0);
-        setMaxPrice(100000);
+        setMaxPrice(Infinity);
         break;
       case "under-10000":
         setMinPrice(0);
@@ -118,7 +118,7 @@ const ProductListing = () => {
         break;
       case "above-50000":
         setMinPrice(50001);
-        setMaxPrice(500000);
+        setMaxPrice(Infinity);
         break;
       default:
         break;
@@ -157,7 +157,9 @@ const ProductListing = () => {
     .filter((product) => {
       const productVariants = variants[product.id] || [];
       const finalPrice =
-        productVariants.length > 0 ? productVariants[0].final_price : product.price || 0;
+        productVariants.length > 0
+          ? productVariants[0].final_price
+          : product.price || 0;
       return (
         (!activeTab || product.cate_id === activeTab) &&
         finalPrice >= minPrice &&
@@ -169,8 +171,10 @@ const ProductListing = () => {
     .sort((a, b) => {
       const aVariants = variants[a.id] || [];
       const bVariants = variants[b.id] || [];
-      const aFinalPrice = aVariants.length > 0 ? aVariants[0].final_price : a.price || 0;
-      const bFinalPrice = bVariants.length > 0 ? bVariants[0].final_price : b.price || 0;
+      const aFinalPrice =
+        aVariants.length > 0 ? aVariants[0].final_price : a.price || 0;
+      const bFinalPrice =
+        bVariants.length > 0 ? bVariants[0].final_price : b.price || 0;
       if (sortOption === "price-low") return aFinalPrice - bFinalPrice;
       if (sortOption === "price-high") return bFinalPrice - aFinalPrice;
       return 0; // Popular (default)
@@ -198,14 +202,17 @@ const ProductListing = () => {
     if (selectedVariant.id) {
       isWishlisted(product.id, selectedVariant.id)
         ? removeFromWishlist(product.id, selectedVariant.id)
-        : addToWishlist({
-            ...product,
-            price: selectedVariant.price,
-            final_price: selectedVariant.final_price,
-            discount: selectedVariant.discount,
-            memory: selectedVariant.memory,
-            storage: selectedVariant.storage,
-          }, selectedVariant.id);
+        : addToWishlist(
+            {
+              ...product,
+              price: selectedVariant.price,
+              final_price: selectedVariant.final_price,
+              discount: selectedVariant.discount,
+              memory: selectedVariant.memory,
+              storage: selectedVariant.storage,
+            },
+            selectedVariant.id
+          );
     }
   };
 
@@ -391,7 +398,9 @@ const ProductListing = () => {
                           {product.slogan.slice(0, 35)}
                         </h6>
                         <div className="price">
-                          <span className="new-price">₹{variant.final_price}</span>
+                          <span className="new-price">
+                            ₹{variant.final_price}
+                          </span>
                           &nbsp;
                           {variant.discount > 0 && (
                             <span className="old-price">₹{variant.price}</span>

@@ -105,7 +105,7 @@ const ProductView = () => {
   }, [id]);
 
   if (!productData || !selectedVariant) {
-    return <div class="spinner"></div>;
+    return <div className="spinner"></div>;
   }
 
   const images = productData.image

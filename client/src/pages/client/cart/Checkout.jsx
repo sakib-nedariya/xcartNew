@@ -29,7 +29,7 @@ const Checkout = () => {
   const loggedInUserId = storedUser?.id || localStorage.getItem("id");
 
   const handleSelection = (option) => setSelectedOption(option);
-  const { cartItems } = useCart();
+  const { cartItems, cartTotals } = useCart();
 
   // Fetch saved address on load
   useEffect(() => {
@@ -63,13 +63,6 @@ const Checkout = () => {
     });
   };
 
-  const getSubtotal = () => {
-    return cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-  };
-
   const getFirstImage = (image) => {
     if (Array.isArray(image)) return image[0];
     try {
@@ -79,10 +72,6 @@ const Checkout = () => {
       return image;
     }
   };
-
-  const discount = 999;
-  const tax = 2999;
-  const total = getSubtotal() + tax - discount;
 
   return (
     <>
@@ -305,7 +294,7 @@ const Checkout = () => {
                         {item.slogan}
                       </p>
                       <p className="order-summery-product-price">
-                        {item.quantity} x <span>₹{item.price}</span>
+                        {item.quantity} x <span>₹{item.final_price || item.price}</span>
                       </p>
                     </div>
                   </div>
@@ -314,7 +303,7 @@ const Checkout = () => {
 
               <div className="shopping-cart-price-row">
                 <span>Sub-total</span>
-                <span>₹{getSubtotal()}</span>
+                <span>₹{cartTotals.subtotal}</span>
               </div>
               <div className="shopping-cart-price-row">
                 <span>Shipping</span>
@@ -322,16 +311,12 @@ const Checkout = () => {
               </div>
               <div className="shopping-cart-price-row">
                 <span>Discount</span>
-                <span>₹{discount}</span>
-              </div>
-              <div className="shopping-cart-price-row">
-                <span>Tax</span>
-                <span>₹{tax}</span>
+                <span>₹{cartTotals.discount}</span>
               </div>
               <div className="shopping-cart-price-row product-total-price">
                 <span>Total</span>
                 <span>
-                  <b>₹{total}</b>
+                  <b>₹{cartTotals.total}</b>
                 </span>
               </div>
 

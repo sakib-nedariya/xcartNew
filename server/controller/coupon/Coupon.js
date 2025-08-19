@@ -26,9 +26,9 @@ const getCouponDataWithId = (req, res) => {
 
 const createCouponData = (req, res) => {
   try {
-    const { coupon_code, discount, max_price, min_price, start_date, expiry_date, status } = req.body;
-    const sql = "INSERT INTO coupon (coupon_code, discount, max_price, min_price, start_date, expiry_date, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    const data = [coupon_code, discount, max_price, min_price, start_date, expiry_date, status];
+    const { coupon_code, discount_type, discount, max_price, min_price, start_date, expiry_date, status } = req.body;
+    const sql = "INSERT INTO coupon (coupon_code, discount_type, discount, max_price, min_price, start_date, expiry_date, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    const data = [coupon_code, discount_type, discount, max_price, min_price, start_date, expiry_date, status];
 
     connection.query(sql, data, (error) => {
       if (error) {
@@ -71,10 +71,10 @@ const createCouponData = (req, res) => {
 const editCouponData = (req, res) => {
   try {
     const id = req.params.id;
-    const { coupon_code, discount, max_price, min_price, start_date, expiry_date, status } = req.body;
+    const { coupon_code, discount_type, discount, max_price, min_price, start_date, expiry_date, status } = req.body;
 
-      sql = "UPDATE coupon SET coupon_code=?, discount=?, max_price=?, min_price=?, start_date=?, expiry_date=?, status=? WHERE id=?";
-      data = [coupon_code, discount, max_price, min_price, start_date, expiry_date, status, id];
+      sql = "UPDATE coupon SET coupon_code=?, discount_type=?, discount=?, max_price=?, min_price=?, start_date=?, expiry_date=?, status=? WHERE id=?";
+      data = [coupon_code, discount_type, discount, max_price, min_price, start_date, expiry_date, status, id];
     
 
     connection.query(sql, data, (error) => {
@@ -122,7 +122,12 @@ const applyCoupon = (req, res) => {
       }
 
       // discount calculation
-      let discount = (subtotal * coupon.discount) / 100; // मान लो % discount है
+      let discount = 0;
+      if (coupon.discount_type === "percentage") {
+        discount = (subtotal * coupon.discount) / 100;
+      } else if (coupon.discount_type === "rupees") {
+        discount = coupon.discount;
+      }
       if (discount > coupon.max_price) discount = coupon.max_price;
 
       const total = subtotal - discount;

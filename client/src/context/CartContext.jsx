@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import axios from "axios";
 import {
   notifyError,
@@ -12,35 +12,40 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [cartTotals, setCartTotals] = useState({
     subtotal: 0,
-    tax: 2999,
-    discount: 999,
+    discount: 0,
     total: 0,
   });
-  const user_id = localStorage.getItem("id");
 
-  const fetchCart = async () => {
+  const user_id = useMemo(() => localStorage.getItem("id"), []);
+
+  const fetchCart = useCallback(async () => {
     if (!user_id) {
       setCartItems([]);
-      setCartTotals({ subtotal: 0, tax: 2999, discount: 999, total: 0 });
+      setCartTotals({ subtotal: 0, discount: 0, total: 0 });
       return;
     }
     try {
       const res = await axios.get(`${port}cart/${user_id}`);
-      setCartItems(Array.isArray(res.data.items) ? res.data.items : []);
-      setCartTotals(
-        res.data.totals || { subtotal: 0, tax: 2999, discount: 999, total: 0 }
+      const newItems = Array.isArray(res.data.items) ? res.data.items : [];
+      const newTotals = res.data.totals || { subtotal: 0, discount: 0, total: 0 };
+
+      setCartItems((prev) =>
+        JSON.stringify(prev) === JSON.stringify(newItems) ? prev : newItems
+      );
+      setCartTotals((prev) =>
+        JSON.stringify(prev) === JSON.stringify(newTotals) ? prev : newTotals
       );
     } catch (error) {
       console.error("fetchCart error:", error);
       setCartItems([]);
-      setCartTotals({ subtotal: 0, tax: 2999, discount: 999, total: 0 });
+      setCartTotals({ subtotal: 0, discount: 0, total: 0 });
       notifyError("Failed to fetch cart items");
     }
-  };
+  }, [user_id]);
 
   useEffect(() => {
     fetchCart();
-  }, [user_id]);
+  }, [fetchCart]);
 
   const addToCart = async (product, variant_id, quantity = 1) => {
     if (!user_id) {
@@ -48,13 +53,13 @@ export const CartProvider = ({ children }) => {
       return;
     }
     try {
-      const res = await axios.post(`${port}cart`, {
+      await axios.post(`${port}cart`, {
         user_id,
         product_id: product.id,
         variant_id,
         quantity,
       });
-      await fetchCart(); // Refresh cart and totals
+      await fetchCart(); 
       notifySuccess("Product added to cart");
     } catch (error) {
       console.error("addToCart error:", error);
@@ -69,7 +74,7 @@ export const CartProvider = ({ children }) => {
     }
     try {
       await axios.delete(`${port}cart/${user_id}/${product_id}/${variant_id}`);
-      await fetchCart(); // Refresh cart and totals
+      await fetchCart();
       notifySuccess("Product removed from cart");
     } catch (error) {
       console.error("removeFromCart error:", error);
@@ -101,35 +106,31 @@ export const CartProvider = ({ children }) => {
     0
   );
 
-
-  // context/CartContext.js
-
-const applyCoupon = async (coupon_code) => {
-  if (!user_id) {
-    notifyError("Please login first");
-    return;
-  }
-  try {
-    const res = await axios.post(`${port}applycoupon`, {
-      coupon_code,
-      subtotal: cartTotals.subtotal,
-    });
-    if (res.data.success) {
-      setCartTotals((prev) => ({
-        ...prev,
-        discount: res.data.discount,
-        total: res.data.total,
-      }));
-      notifySuccess(res.data.message);
-    } else {
-      notifyError(res.data.message);
+  const applyCoupon = async (coupon_code) => {
+    if (!user_id) {
+      notifyError("Please login first");
+      return;
     }
-  } catch (error) {
-    console.error("applyCoupon error:", error);
-    notifyError(error.response?.data?.message || "Failed to apply coupon");
-  }
-};
-
+    try {
+      const res = await axios.post(`${port}applycoupon`, {
+        coupon_code,
+        subtotal: cartTotals.subtotal,
+      });
+      if (res.data.success) {
+        setCartTotals((prev) => ({
+          ...prev,
+          discount: res.data.discount,
+          total: res.data.total,
+        }));
+        notifySuccess(res.data.message);
+      } else {
+        notifyError(res.data.message);
+      }
+    } catch (error) {
+      console.error("applyCoupon error:", error);
+      notifyError(error.response?.data?.message || "Failed to apply coupon");
+    }
+  };
 
   return (
     <CartContext.Provider

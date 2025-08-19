@@ -16,6 +16,7 @@ const EditCoupon = () => {
   const navigate = useNavigate();
   const [couponData, setCouponData] = useState({
     coupon_code: "",
+    discount_type: "percentage",
     discount: "",
     max_price: "",
     min_price: "",
@@ -115,7 +116,7 @@ const EditCoupon = () => {
           style={{ marginBottom: "24px" }}
         >
           <div>
-            <h5>Edit Customer</h5>
+            <h5>Edit Coupon</h5>
             <div className="admin-panel-breadcrumb">
               <Link to="/admin/dashboard" className="breadcrumb-link active">
                 Dashboard
@@ -125,7 +126,7 @@ const EditCoupon = () => {
                 to="/admin/coupon"
                 className="breadcrumb-link active"
               >
-                Customer List
+                Coupon List
               </Link>
               <IoMdArrowDropright />
               <span className="breadcrumb-text">Edit Coupon</span>
@@ -163,7 +164,23 @@ const EditCoupon = () => {
                 />
                 <div className="coupon-code-input-max-min-price">
                   <div>
-                    <label htmlFor="discount">Discount Percentage (%)</label>
+                    <label htmlFor="discount_type">Discount Type</label>
+                    <select
+                      id="discount_type"
+                      name="discount_type"
+                      value={couponData.discount_type}
+                      onChange={handleChangeInput}
+                    >
+                      <option value="percentage">Percentage</option>
+                      <option value="rupees">Rupees</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="discount">
+                      {couponData.discount_type === "percentage"
+                        ? "Discount Percentage (%)"
+                        : "Discount Amount (₹)"}
+                    </label>
                     <input
                       type="text"
                       id="discount"
@@ -173,6 +190,8 @@ const EditCoupon = () => {
                       placeholder="Type product discount here..."
                     />
                   </div>
+                </div>
+                <div className="coupon-code-input-max-min-price">
                   <div>
                     <label htmlFor="maximum-price">Maximum Price</label>
                     <input

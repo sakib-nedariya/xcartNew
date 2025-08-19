@@ -11,6 +11,7 @@ const ViewCoupon = () => {
   const { id } = useParams();
   const [couponData, setCouponData] = useState({
     coupon_code: "",
+    discount_type: "percentage",
     discount: "",
     max_price: "",
     min_price: "",
@@ -70,9 +71,22 @@ const ViewCoupon = () => {
                 <input type="text" value={couponData.coupon_code} disabled />
                 <div className="coupon-code-input-max-min-price">
                   <div>
-                    <label>Discount Percentage (%)</label>
+                    <label htmlFor="discount_type">Discount Type</label>
+                    <select value={couponData.discount_type} disabled>
+                      <option value="percentage">Percentage</option>
+                      <option value="rupees">Rupees</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label>
+                      {couponData.discount_type === "percentage"
+                        ? "Discount Percentage (%)"
+                        : "Discount Amount (₹)"}
+                    </label>
                     <input type="text" value={couponData.discount} disabled />
                   </div>
+                </div>
+                <div className="coupon-code-input-max-min-price">
                   <div>
                     <label>Maximum Price</label>
                     <input type="text" value={couponData.max_price} disabled />
@@ -90,6 +104,7 @@ const ViewCoupon = () => {
                       name="start_date"
                       value={couponData.start_date}
                       id="start-date"
+                      disabled
                     />
                   </div>
                   <div>
@@ -99,6 +114,7 @@ const ViewCoupon = () => {
                       name="expiry_date"
                       value={couponData.expiry_date}
                       id="expiry-date"
+                      disabled
                     />
                   </div>
                 </div>

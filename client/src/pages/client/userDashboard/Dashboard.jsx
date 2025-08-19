@@ -104,7 +104,7 @@ const Dashboard = () => {
 
             <div className="userdashboard_user_details">
               <h5 className="dashboard-user-name">
-                Hello, {userDashData.first_name}, {userDashData.last_name}
+                Hello, {userDashData.first_name} {userDashData.last_name}
               </h5>
               <p>
                 From your account dashboard, you can easily check & view your
