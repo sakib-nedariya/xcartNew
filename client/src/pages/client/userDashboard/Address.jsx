@@ -11,7 +11,7 @@ import { notifyError, notifySuccess } from "../../admin/layout/ToastMessage";
 const port = import.meta.env.VITE_SERVER_URL;
 
 const Address = () => {
-  const [showShipping, setShowShipping] = useState(false);
+  const [showShipping, setShowShipping] = useState(true);
   const [formValues, setFormValues] = useState({
     first_name: "",
     last_name: "",

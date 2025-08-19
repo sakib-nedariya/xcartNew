@@ -220,7 +220,7 @@ const Coupon = () => {
                   </td>
                   <td className="product-coupon-code">{coupon.coupon_code}</td>
                   <td className="product-stock-keeping-unit discount">
-                    {coupon.discount}%
+                    {coupon.discount_type === "percentage" ? `${coupon.discount}%` : `₹${coupon.discount}`}
                   </td>
                   <td>₹{coupon.min_price}</td>
                   <td>₹{coupon.max_price}</td>

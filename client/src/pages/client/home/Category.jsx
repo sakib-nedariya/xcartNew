@@ -32,7 +32,6 @@ const Category = () => {
     getProductData();
   }, []);
 
-  // Function to count how many products belong to a category
   const getItemCount = (categoryId) => {
     return productData.filter((product) => product.cate_id === categoryId)
       .length;

@@ -10,17 +10,23 @@ import { useCart } from "../../../context/CartContext";
 
 const ShoppingCart = () => {
   const navigate = useNavigate();
- const { cartItems, cartTotals, updateQuantity, removeFromCart, fetchCart, applyCoupon } = useCart();
-const [couponCode, setCouponCode] = useState("");
+  const {
+    cartItems,
+    cartTotals,
+    updateQuantity,
+    removeFromCart,
+    fetchCart,
+    applyCoupon,
+  } = useCart();
+  const [couponCode, setCouponCode] = useState("");
 
-const handleApplyCoupon = () => {
-  if (!couponCode) {
-    alert("Please enter coupon code");
-    return;
-  }
-  applyCoupon(couponCode);
-};
-
+  const handleApplyCoupon = () => {
+    if (!couponCode) {
+      alert("Please enter coupon code");
+      return;
+    }
+    applyCoupon(couponCode);
+  };
 
   useEffect(() => {
     fetchCart();
@@ -104,11 +110,17 @@ const handleApplyCoupon = () => {
                         </span>
                       </td>
                       <td>
-                        <span className="product-variant" style={{fontSize:"13px"}}>
+                        <span
+                          className="product-variant"
+                          style={{ fontSize: "13px" }}
+                        >
                           {item.memory || "N/A"}/{item.storage || "N/A"} GB
                         </span>
                       </td>
                       <td>
+                        <span className="product-old-price">
+                          ₹{item.price}
+                        </span>
                         <span className="product-new-price">
                           ₹{item.final_price || item.price || 0}
                         </span>
@@ -135,19 +147,19 @@ const handleApplyCoupon = () => {
               <h6>Cart Totals</h6>
               <div className="shopping-cart-price-row">
                 <span>Sub-total</span>
-                <span className="shopping-cart-price">₹{cartTotals.subtotal || 0}</span>
+                <span className="shopping-cart-price">
+                  ₹{cartTotals.subtotal || 0}
+                </span>
               </div>
               <div className="shopping-cart-price-row">
                 <span>Shipping</span>
                 <span className="shopping-cart-price">Free</span>
               </div>
               <div className="shopping-cart-price-row">
-                <span>Discount</span>
-                <span className="shopping-cart-price">₹{cartTotals.discount || 999}</span>
-              </div>
-              <div className="shopping-cart-price-row">
-                <span>Tax</span>
-                <span className="shopping-cart-price">₹{cartTotals.tax || 2999}</span>
+                <span>Coupon Discount</span>
+                <span className="shopping-cart-price">
+                  ₹{cartTotals.discount || 0}
+                </span>
               </div>
               <div className="shopping-cart-price-row product-total-price">
                 <span>Total</span>
@@ -165,23 +177,22 @@ const handleApplyCoupon = () => {
             </div>
 
             <div className="shopping-cart-price-card coupon-code">
-  <h6>Coupon Code</h6>
-  <input
-    type="text"
-    className="coupon-input"
-    placeholder="Coupon Code"
-    value={couponCode}
-    onChange={(e) => setCouponCode(e.target.value)}
-  />
-  <button
-    type="button"
-    className="apply-coupon-btn secondary-btn"
-    onClick={handleApplyCoupon}
-  >
-    APPLY COUPON
-  </button>
-</div>
-
+              <h6>Coupon Code</h6>
+              <input
+                type="text"
+                className="coupon-input"
+                placeholder="Coupon Code"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+              />
+              <button
+                type="button"
+                className="apply-coupon-btn secondary-btn"
+                onClick={handleApplyCoupon}
+              >
+                APPLY COUPON
+              </button>
+            </div>
           </div>
         </div>
       </section>

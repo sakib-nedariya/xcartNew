@@ -113,12 +113,9 @@
 }
 .order-summery-product-details p {
   font-family: var(--info-font);
-  width: 250px;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .order-summery-product-price {
-  margin: 8px 0 0;
+  margin-top: 6px;
 }
 .order-summery-product-price span {
   color: var(--primary-btn-bg);

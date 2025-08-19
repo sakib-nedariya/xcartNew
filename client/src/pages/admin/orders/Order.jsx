@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import Sidebar from "../layout/Sidebar";
 import Navbar from "../layout/Navbar";
 import {
-  HiOutlinePlus,
   HiOutlineArrowLeft,
   HiOutlineArrowRight,
 } from "react-icons/hi";

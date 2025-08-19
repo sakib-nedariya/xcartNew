@@ -117,12 +117,11 @@ const getCartByUserId = (req, res) => {
       return res.status(500).json({ message: "Error fetching cart", error: error.message });
     }
     const subtotal = cartItems.reduce((sum, item) => sum + (item.total_price || 0), 0);
-    const tax = 2999; // Hardcoded as per ShoppingCart.js
-    const discount = 999; // Hardcoded as per ShoppingCart.js
-    const total = subtotal + tax - discount;
+    const discount = 0; 
+    const total = subtotal - discount;
     return res.json({
       items: cartItems || [],
-      totals: { subtotal, tax, discount, total },
+      totals: { subtotal, discount, total },
     });
   });
 };
