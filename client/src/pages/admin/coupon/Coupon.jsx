@@ -275,7 +275,6 @@ const Coupon = () => {
         </div>
       </main>
 
-      {/* Delete Modal */}
       {isDeleteModalOpen && (
         <DeleteModal
           title="Coupon"

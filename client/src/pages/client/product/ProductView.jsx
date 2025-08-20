@@ -14,6 +14,10 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Pagination, Navigation } from "swiper/modules";
 import { useWishlist } from "../../../context/WishlistContext";
+import { BsAward } from "react-icons/bs";
+import {  PiHandshake, PiHeadphones } from "react-icons/pi";
+import { TbTruckDelivery } from "react-icons/tb";
+import { GoCreditCard } from "react-icons/go";
 
 const port = import.meta.env.VITE_SERVER_URL;
 
@@ -47,21 +51,21 @@ const ProductView = () => {
   };
 
   const handleAddToCart = () => {
-  if (selectedVariant) {
-    addToCart(
-      {
-        ...productData,
-        price: selectedVariant.price,
-        final_price: selectedVariant.final_price,
-        discount: selectedVariant.discount,
-        memory: selectedVariant.memory,
-        storage: selectedVariant.storage,
-      },
-      selectedVariant.id,
-      quantity
-    );
-  }
-};
+    if (selectedVariant) {
+      addToCart(
+        {
+          ...productData,
+          price: selectedVariant.price,
+          final_price: selectedVariant.final_price,
+          discount: selectedVariant.discount,
+          memory: selectedVariant.memory,
+          storage: selectedVariant.storage,
+        },
+        selectedVariant.id,
+        quantity
+      );
+    }
+  };
 
   const getProductData = async () => {
     try {
@@ -250,8 +254,36 @@ const ProductView = () => {
           </div>
 
           <div className="product-view-page-product-description content">
-            <h6>Description</h6>
-            <p>{productData.description}</p>
+            <div className="description-content">
+              <h6>Description</h6>
+              <p>{productData.description}</p>
+            </div>
+            <span className="middle-border-in-desciption"></span>
+            <div className="other-provided-facility">
+              <h6>Feature</h6>
+              <ul>
+                <li>
+                  <BsAward />
+                  Free 1 Year Warranty
+                </li>
+                <li>
+                  <TbTruckDelivery />
+                  Free Shipping & Fasted Delivery
+                </li>
+                <li>
+                  <PiHandshake />
+                  100% Money-back guarantee
+                </li>
+                <li>
+                  <PiHeadphones />
+                  24/7 Customer support
+                </li>
+                <li>
+                  <GoCreditCard />
+                  Secure payment method
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

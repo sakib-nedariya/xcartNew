@@ -162,7 +162,7 @@ const EditCoupon = () => {
                   onChange={handleChangeInput}
                   placeholder="Type coupon code here..."
                 />
-                <div className="coupon-code-input-max-min-price">
+                <div className="coupon-code-input-max-min-price grid">
                   <div>
                     <label htmlFor="discount_type">Discount Type</label>
                     <select
@@ -191,18 +191,7 @@ const EditCoupon = () => {
                     />
                   </div>
                 </div>
-                <div className="coupon-code-input-max-min-price">
-                  <div>
-                    <label htmlFor="maximum-price">Maximum Price</label>
-                    <input
-                      type="text"
-                      id="maximum-price"
-                      name="max_price"
-                      value={couponData.max_price}
-                      onChange={handleChangeInput}
-                      placeholder="Type products max price here..."
-                    />
-                  </div>
+                <div className="coupon-code-input-max-min-price grid">
                   <div>
                     <label htmlFor="minimum-price">Minimum Price</label>
                     <input
@@ -214,8 +203,20 @@ const EditCoupon = () => {
                       placeholder="Type products min price here..."
                     />
                   </div>
+                  <div>
+                    <label htmlFor="maximum-price">Maximum Price</label>
+                    <input
+                      type="text"
+                      id="maximum-price"
+                      name="max_price"
+                      value={couponData.max_price}
+                      onChange={handleChangeInput}
+                      placeholder="Type products max price here..."
+                    />
+                  </div>
+                  
                 </div>
-                <div className="coupon-code-start-expity-date">
+                <div className="coupon-code-start-expity-date grid">
                   <div>
                     <label htmlFor="start-date">Start Date</label>
                     <input

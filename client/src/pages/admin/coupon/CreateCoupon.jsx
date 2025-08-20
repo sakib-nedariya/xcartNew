@@ -135,7 +135,7 @@ const CreateCoupon = () => {
                   onChange={handleChangeInput}
                   placeholder="Type coupon code here..."
                 />
-                <div className="coupon-code-input-max-min-price">
+                <div className="coupon-code-input-max-min-price grid">
                   <div>
                     <label htmlFor="discount_type">Discount Type</label>
                     <select
@@ -164,7 +164,7 @@ const CreateCoupon = () => {
                     />
                   </div>
                 </div>
-                <div className="coupon-code-input-max-min-price">
+                <div className="coupon-code-input-max-min-price grid">
                   <div>
                     <label htmlFor="minimum-price">Minimum Price</label>
                     <input
@@ -189,7 +189,7 @@ const CreateCoupon = () => {
                   </div>
                 </div>
 
-                <div className="coupon-code-start-expity-date">
+                <div className="coupon-code-start-expity-date grid">
                   <div>
                     <label htmlFor="start-date">Start Date</label>
                     <input

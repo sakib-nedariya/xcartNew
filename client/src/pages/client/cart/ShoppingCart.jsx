@@ -74,15 +74,17 @@ const ShoppingCart = () => {
           <div className="shopping-cart-container">
             <h6>Shopping Cart</h6>
             <table>
-              <thead>
-                <tr>
-                  <th>Products</th>
-                  <th>Variant</th>
-                  <th>Price</th>
-                  <th>Quantity</th>
-                  <th>Sub-Total</th>
-                </tr>
-              </thead>
+              {cartItems.length > 0 && (
+                <thead>
+                  <tr>
+                    <th>Products</th>
+                    <th>Variant</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Sub-Total</th>
+                  </tr>
+                </thead>
+              )}
               <tbody>
                 {!Array.isArray(cartItems) || cartItems.length === 0 ? (
                   <tr>
@@ -118,9 +120,7 @@ const ShoppingCart = () => {
                         </span>
                       </td>
                       <td>
-                        <span className="product-old-price">
-                          ₹{item.price}
-                        </span>
+                        <span className="product-old-price">₹{item.price}</span>
                         <span className="product-new-price">
                           ₹{item.final_price || item.price || 0}
                         </span>

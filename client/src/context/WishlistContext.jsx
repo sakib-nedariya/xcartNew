@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import { notifySuccess } from "../pages/admin/layout/ToastMessage";
 
 const WishlistContext = createContext();
 const port = import.meta.env.VITE_SERVER_URL;
@@ -50,9 +51,14 @@ export const WishlistProvider = ({ children }) => {
   const removeFromWishlist = async (product_id, variant_id) => {
     if (!user_id) return;
     try {
-      await axios.delete(`${port}wishlist/${user_id}/${product_id}/${variant_id}`);
+      await axios.delete(
+        `${port}wishlist/${user_id}/${product_id}/${variant_id}`
+      );
+      notifySuccess("Product removed from wishlist");
       setWishlist((prev) =>
-        prev.filter((p) => !(p.id === product_id && p.variant_id === variant_id))
+        prev.filter(
+          (p) => !(p.id === product_id && p.variant_id === variant_id)
+        )
       );
     } catch (error) {
       console.error("removeFromWishlist error:", error);
@@ -60,7 +66,9 @@ export const WishlistProvider = ({ children }) => {
   };
 
   const isWishlisted = (product_id, variant_id) =>
-    wishlist.some((item) => item.id === product_id && item.variant_id === variant_id);
+    wishlist.some(
+      (item) => item.id === product_id && item.variant_id === variant_id
+    );
 
   return (
     <WishlistContext.Provider

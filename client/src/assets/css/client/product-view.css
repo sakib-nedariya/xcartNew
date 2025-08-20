@@ -165,14 +165,14 @@
   justify-content: space-between;
   gap: 15px;
 }
-.variant-buttons{
+.variant-buttons {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 15px;
   margin-top: 6px;
 }
-.variant-buttons .variant-btn{
+.variant-buttons .variant-btn {
   padding: 12px 20px;
   border: 2px solid var(--primary-border-color);
   background-color: transparent;
@@ -180,7 +180,7 @@
   border-radius: 10px;
   color: var(--light-black-color);
 }
-.variant-buttons .variant-btn.active{
+.variant-buttons .variant-btn.active {
   border-color: var(--primary-btn-bg);
   color: var(--black-color);
   background-color: var(--white-color);
@@ -238,11 +238,11 @@
 
 /* Bookmark Button */
 .product-view-container .bookmark-btn {
-     border: 2px solid var(--primary-font-color);
-    padding: 8px 13px;
-    border-radius: 8px;
-    background: none;
-    display: flex;
+  border: 2px solid var(--primary-font-color);
+  padding: 8px 13px;
+  border-radius: 8px;
+  background: none;
+  display: flex;
 }
 
 .product-view-container .product-view-page-product-description {
@@ -255,12 +255,34 @@
 .product-view-container .product-view-page-product-description p {
   font-family: var(--info-font);
   color: var(--light-black-color);
-  margin-top: 10px;
   line-height: 23px;
-  font-weight: 300;
 }
-
-
-
-
-
+.middle-border-in-desciption {
+  border: 1px solid var(--primary-border-color);
+}
+.product-view-page-product-description.content {
+  display: flex;
+  justify-content: space-between;
+}
+.product-view-page-product-description.content h6 {
+  margin-bottom: 10px;
+  font-size: 17px;
+}
+.content .description-content {
+  width: 60%;
+}
+.content .other-provided-facility {
+  width: 30%;
+}
+.other-provided-facility li {
+  font-family: var(--info-font);
+  font-size: 15px;
+  line-height: 2.2em;
+  display: flex;
+  align-items: center;
+}
+.other-provided-facility li svg{
+  font-size: 22px;
+  margin-right: 10px;
+  color: var(--primary-btn-bg);
+}
