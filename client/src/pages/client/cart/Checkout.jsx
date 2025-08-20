@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "../../../assets/css/client/checkout.css";
 import CODImage from "../../../assets/image/CashOnDelivery.png";
 import Razorpay from "../../../assets/image/razorpay.png";
-import MyWallet from "../../../assets/image/MyWallet.png";
+import upiLogo from "../../../assets/image/UPI-Logo.webp";
 import Navbar from "../layout/Navbar";
 import Footer from "../layout/Footer";
 import { useCart } from "../../../context/CartContext";
@@ -231,7 +231,7 @@ const Checkout = () => {
                 {[
                   { value: "cod", img: CODImage, label: "Cash on Delivery" },
                   { value: "razorpay", img: Razorpay, label: "Razorpay" },
-                  { value: "wallet", img: MyWallet, label: "My Wallet" },
+                  { value: "upi", img: upiLogo, label: "UPI" } ,
                 ].map((option) => (
                   <div
                     key={option.value}

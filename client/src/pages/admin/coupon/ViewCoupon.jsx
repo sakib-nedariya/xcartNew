@@ -24,7 +24,7 @@ const ViewCoupon = () => {
     try {
       const res = await axios.get(`${port}getcoupondatawithid/${id}`);
       const data = res.data[0];
-  
+
       setCouponData({
         ...data,
         start_date: data.start_date ? data.start_date.split("T")[0] : "",
@@ -34,7 +34,6 @@ const ViewCoupon = () => {
       console.log("Error fetching data:", error);
     }
   };
-  
 
   useEffect(() => {
     getCouponData();
@@ -45,19 +44,29 @@ const ViewCoupon = () => {
       <Sidebar />
       <Navbar />
       <main className="admin-panel-header-div">
-        <div className="admin-dashboard-main-header" style={{ marginBottom: "24px" }}>
+        <div
+          className="admin-dashboard-main-header"
+          style={{ marginBottom: "24px" }}
+        >
           <div>
             <h5>View Coupon</h5>
             <div className="admin-panel-breadcrumb">
-              <Link to="/admin/dashboard" className="breadcrumb-link active">Dashboard</Link>
+              <Link to="/admin/dashboard" className="breadcrumb-link active">
+                Dashboard
+              </Link>
               <IoMdArrowDropright />
-              <Link to="/admin/coupon" className="breadcrumb-link active">Coupon List</Link>
+              <Link to="/admin/coupon" className="breadcrumb-link active">
+                Coupon List
+              </Link>
               <IoMdArrowDropright />
               <span className="breadcrumb-text">View Coupon</span>
             </div>
           </div>
           <div className="admin-panel-header-add-buttons">
-            <NavLink to="/admin/coupon" className="primary-btn dashboard-add-product-btn">
+            <NavLink
+              to="/admin/coupon"
+              className="primary-btn dashboard-add-product-btn"
+            >
               <IoArrowBackSharp /> Back
             </NavLink>
           </div>
@@ -69,7 +78,7 @@ const ViewCoupon = () => {
               <div className="add-product-form-container">
                 <label>Coupon Code</label>
                 <input type="text" value={couponData.coupon_code} disabled />
-                <div className="coupon-code-input-max-min-price">
+                <div className="coupon-code-input-max-min-price grid">
                   <div>
                     <label htmlFor="discount_type">Discount Type</label>
                     <select value={couponData.discount_type} disabled>
@@ -86,17 +95,17 @@ const ViewCoupon = () => {
                     <input type="text" value={couponData.discount} disabled />
                   </div>
                 </div>
-                <div className="coupon-code-input-max-min-price">
-                  <div>
-                    <label>Maximum Price</label>
-                    <input type="text" value={couponData.max_price} disabled />
-                  </div>
+                <div className="coupon-code-input-max-min-price grid">
                   <div>
                     <label>Minimum Price</label>
                     <input type="text" value={couponData.min_price} disabled />
                   </div>
+                  <div>
+                    <label>Maximum Price</label>
+                    <input type="text" value={couponData.max_price} disabled />
+                  </div>
                 </div>
-                <div className="coupon-code-start-expity-date">
+                <div className="coupon-code-start-expity-date grid">
                   <div>
                     <label htmlFor="start-date">Start Date</label>
                     <input
