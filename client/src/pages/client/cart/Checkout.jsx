@@ -30,6 +30,15 @@ const Checkout = () => {
 
   const handleSelection = (option) => setSelectedOption(option);
   const { cartItems, cartTotals } = useCart();
+  const [couponCode, setCouponCode] = useState("");
+
+  const handleApplyCoupon = () => {
+    if (!couponCode) {
+      alert("Please enter coupon code");
+      return;
+    }
+    applyCoupon(couponCode);
+  };
 
   // Fetch saved address on load
   useEffect(() => {
@@ -231,7 +240,7 @@ const Checkout = () => {
                 {[
                   { value: "cod", img: CODImage, label: "Cash on Delivery" },
                   { value: "razorpay", img: Razorpay, label: "Razorpay" },
-                  { value: "upi", img: upiLogo, label: "UPI" } ,
+                  { value: "upi", img: upiLogo, label: "UPI" },
                 ].map((option) => (
                   <div
                     key={option.value}
@@ -271,6 +280,23 @@ const Checkout = () => {
           </div>
 
           <div className="checkout-container-order-price-summery">
+            <div className="shopping-cart-price-card coupon-code">
+              <h6>Coupon Code</h6>
+              <input
+                type="text"
+                className="coupon-input"
+                placeholder="Coupon Code"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value)}
+              />
+              <button
+                type="button"
+                className="apply-coupon-btn secondary-btn"
+                onClick={handleApplyCoupon}
+              >
+                APPLY COUPON
+              </button>
+            </div>
             <div className="shopping-cart-price-card">
               <h6>Order Summary</h6>
               <div
@@ -294,7 +320,8 @@ const Checkout = () => {
                         {item.slogan}
                       </p>
                       <p className="order-summery-product-price">
-                        {item.quantity} x <span>₹{item.final_price || item.price}</span>
+                        {item.quantity} x{" "}
+                        <span>₹{item.final_price || item.price}</span>
                       </p>
                     </div>
                   </div>
@@ -327,6 +354,7 @@ const Checkout = () => {
                 Place Order
               </button>
             </div>
+            
           </div>
         </div>
       </section>

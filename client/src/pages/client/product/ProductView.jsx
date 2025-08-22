@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom"; // Add useLocation
+import { useParams, useLocation } from "react-router-dom";
 import "../../../assets/css/client/product-view.css";
 import "../../../assets/css/main.css";
 import Navbar from "../layout/Navbar";
@@ -15,7 +15,7 @@ import "swiper/css/navigation";
 import { Pagination, Navigation } from "swiper/modules";
 import { useWishlist } from "../../../context/WishlistContext";
 import { BsAward } from "react-icons/bs";
-import {  PiHandshake, PiHeadphones } from "react-icons/pi";
+import { PiHandshake, PiHeadphones } from "react-icons/pi";
 import { TbTruckDelivery } from "react-icons/tb";
 import { GoCreditCard } from "react-icons/go";
 
@@ -23,7 +23,7 @@ const port = import.meta.env.VITE_SERVER_URL;
 
 const ProductView = () => {
   const { id } = useParams();
-  const { state } = useLocation(); // Get navigation state
+  const { state } = useLocation();
   const [productData, setProductData] = useState(null);
   const [variants, setVariants] = useState([]);
   const [selectedVariant, setSelectedVariant] = useState(null);
