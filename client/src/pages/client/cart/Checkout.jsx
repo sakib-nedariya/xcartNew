@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import "../../../assets/css/client/checkout.css";
 import CODImage from "../../../assets/image/CashOnDelivery.png";
 import Razorpay from "../../../assets/image/razorpay.png";
@@ -25,11 +26,12 @@ const Checkout = () => {
     phonenumber: "",
   });
 
+  const { state } = useLocation();
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const loggedInUserId = storedUser?.id || localStorage.getItem("id");
 
   const handleSelection = (option) => setSelectedOption(option);
-  const { cartItems, cartTotals } = useCart();
+  const { cartItems, cartTotals, applyCoupon } = useCart();
   const [couponCode, setCouponCode] = useState("");
 
   const handleApplyCoupon = () => {
@@ -81,6 +83,16 @@ const Checkout = () => {
       return image;
     }
   };
+
+  // Determine items to display: Buy Now product or cart items
+  const displayItems = state?.buyNowProduct ? [state.buyNowProduct] : cartItems;
+
+  // Calculate totals for Buy Now product or cart
+  const subtotal = state?.buyNowProduct
+    ? state.buyNowProduct.totalPrice
+    : cartTotals.subtotal;
+  const couponDiscount = cartTotals.discount || 0;
+  const total = subtotal - couponDiscount;
 
   return (
     <>
@@ -229,7 +241,7 @@ const Checkout = () => {
               <div className="checkout-section-shipping-option">
                 <input type="checkbox" id="ship-different" />
                 <label htmlFor="ship-different">
-                  Ship into different address
+                  Ship to a different address
                 </label>
               </div>
             </form>
@@ -308,42 +320,50 @@ const Checkout = () => {
                   e.currentTarget.style.overflowY = "hidden";
                 }}
               >
-                {cartItems.map((item) => (
-                  <div className="order-summery-product" key={item.id}>
-                    <img
-                      src={`/upload/${getFirstImage(item.image)}`}
-                      alt={item.slogan}
-                    />
-
-                    <div className="order-summery-product-details">
-                      <p className="order-summery-product-title">
-                        {item.slogan}
-                      </p>
-                      <p className="order-summery-product-price">
-                        {item.quantity} x{" "}
-                        <span>₹{item.final_price || item.price}</span>
-                      </p>
+                {displayItems.length > 0 ? (
+                  displayItems.map((item, index) => (
+                    <div className="order-summery-product" key={index}>
+                      <img
+                        src={`/upload/${getFirstImage(item.image)}`}
+                        alt={item.slogan || item.name}
+                      />
+                      <div className="order-summery-product-details">
+                        <p className="order-summery-product-title">
+                          {item.slogan || item.name}
+                          {item.memory && item.storage
+                            ? ` (${item.memory}/${item.storage} GB)`
+                            : ""}
+                        </p>
+                        <p className="order-summery-product-price">
+                          {item.quantity} x <span>₹{item.final_price}</span>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p>No items selected</p>
+                )}
               </div>
 
               <div className="shopping-cart-price-row">
                 <span>Sub-total</span>
-                <span>₹{cartTotals.subtotal}</span>
+                <span>₹{subtotal}</span>
               </div>
+
               <div className="shopping-cart-price-row">
                 <span>Shipping</span>
                 <span>Free</span>
               </div>
-              <div className="shopping-cart-price-row">
-                <span>Discount</span>
-                <span>₹{cartTotals.discount}</span>
-              </div>
+              {couponDiscount > 0 && (
+                <div className="shopping-cart-price-row">
+                  <span>Coupon Discount</span>
+                  <span>- ₹{couponDiscount}</span>
+                </div>
+              )}
               <div className="shopping-cart-price-row product-total-price">
                 <span>Total</span>
                 <span>
-                  <b>₹{cartTotals.total}</b>
+                  <b>₹{total}</b>
                 </span>
               </div>
 
@@ -354,7 +374,6 @@ const Checkout = () => {
                 Place Order
               </button>
             </div>
-            
           </div>
         </div>
       </section>
@@ -364,3 +383,4 @@ const Checkout = () => {
 };
 
 export default Checkout;
+

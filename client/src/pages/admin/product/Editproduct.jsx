@@ -10,6 +10,7 @@ import Navbar from "../layout/Navbar";
 import axios from "axios";
 import { RxCross2 } from "react-icons/rx";
 import { notifyError, notifySuccess } from "../layout/ToastMessage";
+import { Editor } from "@tinymce/tinymce-react";
 
 const port = import.meta.env.VITE_SERVER_URL;
 
@@ -19,7 +20,7 @@ const EditProduct = () => {
 
   const [brandData, setBrandData] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
-  const [selectedFiles, setSelectedFiles] = useState([]); // { file, preview }
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [draggedIndex, setDraggedIndex] = useState(null);
 
   const [productData, setProductData] = useState({
@@ -32,7 +33,6 @@ const EditProduct = () => {
     status: "",
   });
 
-  // ---------- VARIANTS ----------
   const [variants, setVariants] = useState([]);
   const [variantForm, setVariantForm] = useState({
     memory: "",
@@ -43,7 +43,6 @@ const EditProduct = () => {
   });
   const [editingId, setEditingId] = useState(null);
 
-  // ---------- LOAD ----------
   useEffect(() => {
     getBrandData();
     getCategoryData();
@@ -105,7 +104,6 @@ const EditProduct = () => {
     }
   };
 
-  // ---------- IMAGES ----------
   const allImages = useMemo(
     () => [
       ...productData.existingImages.map((img) => ({
@@ -165,8 +163,12 @@ const EditProduct = () => {
     }
   };
 
-  // ---------- PRODUCT SAVE ----------
   const saveProductInfo = async () => {
+    if (variants.length === 0) {
+      notifyError("Please add at least one variant");
+      return;
+    }
+
     const formData = new FormData();
     const fields = [
       "brand_id",
@@ -195,33 +197,50 @@ const EditProduct = () => {
     }
   };
 
-  // ---------- VARIANT FUNCTIONS ----------
   const handleVariantFormChange = (e) => {
     const { name, value } = e.target;
     setVariantForm((p) => ({ ...p, [name]: value }));
   };
 
   const resetVariantForm = () => {
-    setVariantForm({ memory: "", storage: "", price: "", discount: "", final_price: "" });
+    setVariantForm({
+      memory: "",
+      storage: "",
+      price: "",
+      discount: "",
+      final_price: "",
+    });
     setEditingId(null);
   };
 
   const saveVariant = async () => {
-    const { memory, storage, price, discount } = variantForm;
-    if (!memory || !storage || !price) {
-      notifyError("Memory, storage, and price are required");
+    const { price, discount } = variantForm;
+    if (!price) {
+      notifyError("Please enter a valid price");
       return;
     }
 
-    const finalPrice = Math.ceil(price - (price * (discount || 0) / 100));
+    const priceNum = parseFloat(price);
+    if (isNaN(priceNum) || priceNum <= 0) {
+      notifyError("Please enter a valid price");
+      return;
+    }
+
+    const discountNum = parseFloat(discount) || 0;
+    if (discount && (isNaN(discountNum) || discountNum < 0 || discountNum > 100)) {
+      notifyError("Please enter a valid discount percentage (0-100)");
+      return;
+    }
+
+    const finalPrice = Math.ceil(priceNum - (priceNum * discountNum) / 100);
 
     if (editingId === null) {
       try {
         const { data } = await axios.post(`${port}product/${id}/variants`, {
-          memory,
-          storage,
-          price,
-          discount: discount || 0,
+          memory: variantForm.memory || "",
+          storage: variantForm.storage || "",
+          price: priceNum,
+          discount: discountNum || 0,
           final_price: finalPrice,
         });
         setVariants((prev) => [...prev, data]);
@@ -234,16 +253,23 @@ const EditProduct = () => {
     } else {
       try {
         await axios.put(`${port}variants/${editingId}`, {
-          memory,
-          storage,
-          price,
-          discount: discount || 0,
+          memory: variantForm.memory || "",
+          storage: variantForm.storage || "",
+          price: priceNum,
+          discount: discountNum || 0,
           final_price: finalPrice,
         });
         setVariants((prev) =>
           prev.map((v) =>
             v.id === editingId
-              ? { ...v, memory, storage, price, discount, final_price: finalPrice }
+              ? {
+                  ...v,
+                  memory: variantForm.memory || "",
+                  storage: variantForm.storage || "",
+                  price: priceNum,
+                  discount: discountNum || 0,
+                  final_price: finalPrice,
+                }
               : v
           )
         );
@@ -293,17 +319,11 @@ const EditProduct = () => {
           <div>
             <h5>Edit Product</h5>
             <div className="admin-panel-breadcrumb">
-              <Link
-                to="/admin/dashboard"
-                className="breadcrumb-link active"
-              >
+              <Link to="/admin/dashboard" className="breadcrumb-link active">
                 Dashboard
               </Link>
               <IoMdArrowDropright />
-              <Link
-                to="/admin/product"
-                className="breadcrumb-link active"
-              >
+              <Link to="/admin/product" className="breadcrumb-link active">
                 Product List
               </Link>
               <IoMdArrowDropright />
@@ -338,18 +358,28 @@ const EditProduct = () => {
                   name="name"
                   value={productData.name}
                   onChange={handleChangeInput}
+                  placeholder="Type product name here..."
                 />
                 <label>Slogan</label>
                 <input
                   name="slogan"
                   value={productData.slogan}
                   onChange={handleChangeInput}
+                  placeholder="Type product slogan here..."
                 />
                 <label>Description</label>
-                <textarea
-                  name="description"
+                <Editor
+                  apiKey="3mzdfu4cu13etf1urgx9fcutzw3kotb51cfhk5aywors01lv"
                   value={productData.description}
-                  onChange={handleChangeInput}
+                  init={{
+                    plugins:
+                      "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount",
+                    toolbar:
+                      "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat",
+                  }}
+                  onEditorChange={(content) =>
+                    setProductData((prev) => ({ ...prev, description: content }))
+                  }
                 />
               </div>
             </div>
@@ -444,6 +474,7 @@ const EditProduct = () => {
                     type="button"
                     className="primary-btn"
                     onClick={saveVariant}
+                    disabled={!variantForm.price}
                   >
                     {editingId ? "Save Changes" : "Add Variant"}
                   </button>
@@ -457,6 +488,7 @@ const EditProduct = () => {
                     name="memory"
                     value={variantForm.memory}
                     onChange={handleVariantFormChange}
+                    placeholder="Memory (optional)"
                   />
                 </div>
                 <div>
@@ -465,22 +497,31 @@ const EditProduct = () => {
                     name="storage"
                     value={variantForm.storage}
                     onChange={handleVariantFormChange}
+                    placeholder="Storage (optional)"
                   />
                 </div>
                 <div>
-                  <label>Price</label>
+                  <label>Price <span style={{ color: "red" }}>*</span></label>
                   <input
+                    type="text"
                     name="price"
                     value={variantForm.price}
                     onChange={handleVariantFormChange}
+                    placeholder="Price"
+                    min="0"
+                    required
                   />
                 </div>
                 <div>
                   <label>Discount (%)</label>
                   <input
+                    type="text"
                     name="discount"
                     value={variantForm.discount}
                     onChange={handleVariantFormChange}
+                    placeholder="Discount (optional)"
+                    min="0"
+                    max="100"
                   />
                 </div>
               </div>
@@ -501,10 +542,10 @@ const EditProduct = () => {
                     {variants.length > 0 ? (
                       variants.map((v) => (
                         <tr key={v.id}>
-                          <td>{v.memory}</td>
-                          <td>{v.storage}</td>
+                          <td>{v.memory || "-"}</td>
+                          <td>{v.storage || "-"}</td>
                           <td>{v.price}</td>
-                          <td>{v.discount}</td>
+                          <td>{v.discount || "0"}</td>
                           <td>{v.final_price}</td>
                           <td
                             style={{
@@ -523,7 +564,6 @@ const EditProduct = () => {
                               title="Remove"
                               onClick={() => deleteVariant(v.id)}
                             />
-                            
                           </td>
                         </tr>
                       ))

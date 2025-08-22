@@ -13,7 +13,7 @@ const ProductCategory = () => {
   const [categoryData, setCategoryData] = useState([]);
   const [productData, setProductData] = useState([]);
   const [variants, setVariants] = useState({});
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
   const [addedProductIds, setAddedProductIds] = useState([]);
   const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist();
   const navigate = useNavigate();
@@ -44,30 +44,30 @@ const ProductCategory = () => {
   };
 
   const handleAddToCart = (product) => {
-  const productVariants = variants[product.id] || [];
-  const variant = productVariants[0] || { id: null, price: 0 };
-  if (!variant.id) {
-    console.error("No variant available for this product");
-    return;
-  }
-  addToCart(
-    {
-      ...product,
-      price: variant.price,
-      final_price: variant.final_price || variant.price,
-      discount: variant.discount || 0,
-      memory: variant.memory,
-      storage: variant.storage,
-    },
-    variant.id
-  );
-  if (!addedProductIds.includes(product.id)) {
-    setAddedProductIds((prev) => [...prev, product.id]);
-    setTimeout(() => {
-      setAddedProductIds((prev) => prev.filter((id) => id !== product.id));
-    }, 2000);
-  }
-};
+    const productVariants = variants[product.id] || [];
+    const variant = productVariants[0] || { id: null, price: 0 };
+    if (!variant.id) {
+      console.error("No variant available for this product");
+      return;
+    }
+
+    addToCart(
+      {
+        ...product,
+        price: variant.price,
+        final_price: variant.final_price || variant.price,
+        discount: variant.discount || 0,
+        memory: variant.memory,
+        storage: variant.storage,
+      },
+      variant.id
+    );
+
+    
+    if (!addedProductIds.includes(product.id)) {
+      setAddedProductIds((prev) => [...prev, product.id]);
+    }
+  };
 
   const handleProductClick = (productId) => {
     navigate(`/product/${productId}`);
@@ -113,6 +113,15 @@ const ProductCategory = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (cartItems && cartItems.length > 0) {
+      const ids = cartItems.map((item) => item.id);
+      setAddedProductIds(ids);
+    } else {
+      setAddedProductIds([]);
+    }
+  }, [cartItems]);
 
   const getFirstImage = (image) => {
     if (Array.isArray(image)) return image[0];
@@ -205,10 +214,15 @@ const ProductCategory = () => {
                       className={`primary-btn homepage-add-to-cart-btn fancy-cart-btn ${
                         addedProductIds.includes(product.id) ? "added" : ""
                       }`}
-                      onClick={() => handleAddToCart(product)}
+                      onClick={
+                        () =>
+                          addedProductIds.includes(product.id)
+                            ? navigate("/shopping-cart") // Already in cart → Go to Cart
+                            : handleAddToCart(product) // Not in cart → Add to Cart
+                      }
                     >
                       {addedProductIds.includes(product.id) ? (
-                        "✓ Added"
+                        "Go to Cart"
                       ) : (
                         <>
                           <FiShoppingCart /> Add to cart

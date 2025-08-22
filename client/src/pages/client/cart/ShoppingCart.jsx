@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { HiMinusSm, HiPlusSm } from "react-icons/hi";
 import { MdOutlineCancel } from "react-icons/md";
@@ -16,7 +16,6 @@ const ShoppingCart = () => {
     updateQuantity,
     removeFromCart,
     fetchCart,
-    applyCoupon,
   } = useCart();
 
   useEffect(() => {
@@ -107,9 +106,12 @@ const ShoppingCart = () => {
                           className="product-variant"
                           style={{ fontSize: "13px" }}
                         >
-                          {item.memory || "N/A"}/{item.storage || "N/A"} GB
+                          {item.memory && item.storage
+                            ? `${item.memory}/${item.storage} GB`
+                            : "--"}
                         </span>
                       </td>
+
                       <td>
                         <span className="product-old-price">₹{item.price}</span>
                         <span className="product-new-price">
@@ -160,7 +162,6 @@ const ShoppingCart = () => {
                 PROCEED TO CHECKOUT
               </button>
             </div>
-
           </div>
         </div>
       </section>

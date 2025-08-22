@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import "../../../assets/css/client/product-view.css";
 import "../../../assets/css/main.css";
 import Navbar from "../layout/Navbar";
@@ -24,6 +24,7 @@ const port = import.meta.env.VITE_SERVER_URL;
 const ProductView = () => {
   const { id } = useParams();
   const { state } = useLocation();
+  const navigate = useNavigate();
   const [productData, setProductData] = useState(null);
   const [variants, setVariants] = useState([]);
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -31,6 +32,8 @@ const ProductView = () => {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isWishlisted } = useWishlist();
+
+  const totalPrice = selectedVariant ? (selectedVariant.final_price * quantity) : 0;
 
   const toggleWishlist = () => {
     if (selectedVariant) {
@@ -64,6 +67,22 @@ const ProductView = () => {
         selectedVariant.id,
         quantity
       );
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (selectedVariant) {
+      const buyNowProduct = {
+        ...productData,
+        price: selectedVariant.price,
+        final_price: selectedVariant.final_price,
+        discount: selectedVariant.discount,
+        memory: selectedVariant.memory,
+        storage: selectedVariant.storage,
+        quantity,
+        totalPrice,
+      };
+      navigate("/checkout", { state: { buyNowProduct } });
     }
   };
 
@@ -181,11 +200,11 @@ const ProductView = () => {
 
               <div className="price-discount">
                 <div className="price">
-                  <span className="new-price">
-                    ₹{selectedVariant.final_price}
-                  </span>
+                  <span className="new-price">₹{totalPrice}</span>
                   {selectedVariant.discount > 0 && (
-                    <span className="old-price">₹{selectedVariant.price}</span>
+                    <span className="old-price">
+                      ₹{(selectedVariant.price * quantity)}
+                    </span>
                   )}
                 </div>
                 {selectedVariant.discount > 0 && (
@@ -195,22 +214,27 @@ const ProductView = () => {
                 )}
               </div>
 
-              <div className="form-group form-first-child">
-                <label style={{ color: "black" }}>Variants:</label>
-                <div className="variant-buttons">
-                  {variants.map((variant, index) => (
-                    <button
-                      key={index}
-                      className={`variant-btn ${
-                        selectedVariant.id === variant.id ? "active" : ""
-                      }`}
-                      onClick={() => setSelectedVariant(variant)}
-                    >
-                      {variant.memory}/{variant.storage} GB
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {variants.length > 0 &&
+                variants.some((v) => v.memory || v.storage) && (
+                  <div className="form-group form-first-child">
+                    <label style={{ color: "black" }}>Variants:</label>
+                    <div className="variant-buttons">
+                      {variants.map((variant, index) => (
+                        <button
+                          key={index}
+                          className={`variant-btn ${
+                            selectedVariant.id === variant.id ? "active" : ""
+                          }`}
+                          onClick={() => setSelectedVariant(variant)}
+                        >
+                          {variant.memory && variant.storage
+                            ? `${variant.memory}/${variant.storage} GB`
+                            : "Default"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
               <div className="cart-actions">
                 <div className="product-actions">
@@ -232,7 +256,12 @@ const ProductView = () => {
                 </div>
 
                 <div className="buy-now-icon">
-                  <button className="primary-btn buy-now">Buy Now</button>
+                  <button
+                    className="primary-btn buy-now"
+                    onClick={handleBuyNow}
+                  >
+                    Buy Now
+                  </button>
                   <button
                     className="bookmark-btn"
                     onClick={toggleWishlist}
@@ -256,7 +285,9 @@ const ProductView = () => {
           <div className="product-view-page-product-description content">
             <div className="description-content">
               <h6>Description</h6>
-              <p>{productData.description}</p>
+              <p
+                dangerouslySetInnerHTML={{ __html: productData.description }}
+              ></p>
             </div>
             <span className="middle-border-in-desciption"></span>
             <div className="other-provided-facility">
