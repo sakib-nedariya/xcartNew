@@ -18,15 +18,6 @@ const ShoppingCart = () => {
     fetchCart,
     applyCoupon,
   } = useCart();
-  const [couponCode, setCouponCode] = useState("");
-
-  const handleApplyCoupon = () => {
-    if (!couponCode) {
-      alert("Please enter coupon code");
-      return;
-    }
-    applyCoupon(couponCode);
-  };
 
   useEffect(() => {
     fetchCart();
@@ -155,12 +146,6 @@ const ShoppingCart = () => {
                 <span>Shipping</span>
                 <span className="shopping-cart-price">Free</span>
               </div>
-              <div className="shopping-cart-price-row">
-                <span>Coupon Discount</span>
-                <span className="shopping-cart-price">
-                  ₹{cartTotals.discount || 0}
-                </span>
-              </div>
               <div className="shopping-cart-price-row product-total-price">
                 <span>Total</span>
                 <span>
@@ -176,23 +161,6 @@ const ShoppingCart = () => {
               </button>
             </div>
 
-            <div className="shopping-cart-price-card coupon-code">
-              <h6>Coupon Code</h6>
-              <input
-                type="text"
-                className="coupon-input"
-                placeholder="Coupon Code"
-                value={couponCode}
-                onChange={(e) => setCouponCode(e.target.value)}
-              />
-              <button
-                type="button"
-                className="apply-coupon-btn secondary-btn"
-                onClick={handleApplyCoupon}
-              >
-                APPLY COUPON
-              </button>
-            </div>
           </div>
         </div>
       </section>

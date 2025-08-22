@@ -196,7 +196,7 @@ const ProductCategory = () => {
                       onClick={() => handleProductClick(product.id)}
                     >
                       <h6 className="product-name">
-                        {product.slogan.slice(0, 35)}
+                        {product.slogan.slice(0, 20)}...
                       </h6>
                       <p className="product-price">₹{displayedPrice}</p>
                     </div>
