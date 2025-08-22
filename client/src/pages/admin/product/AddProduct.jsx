@@ -10,6 +10,7 @@ import axios from "axios";
 import { RxCross2 } from "react-icons/rx";
 import { notifySuccess, notifyError } from "../layout/ToastMessage";
 import default_profile from "../../../assets/image/default_profile.png";
+import { Editor } from "@tinymce/tinymce-react";
 
 const port = import.meta.env.VITE_SERVER_URL;
 
@@ -26,6 +27,13 @@ const AddProduct = () => {
     } catch (error) {
       console.error("Error fetching brand data:", error);
     }
+  };
+
+  const onEditorChange = (content) => {
+    setAddProductData((prev) => ({
+      ...prev,
+      description: content,
+    }));
   };
 
   const getCategoryData = async () => {
@@ -88,8 +96,23 @@ const AddProduct = () => {
   };
 
   const handleAddVariant = () => {
+    if (!addProductData.price) {
+      notifyError("Please enter a valid price");
+      return;
+    }
+
     const price = parseFloat(addProductData.price);
+    if (isNaN(price) || price <= 0) {
+      notifyError("Please enter a valid price");
+      return;
+    }
+
     const discount = parseFloat(addProductData.discount) || 0;
+    if (addProductData.discount && (isNaN(discount) || discount < 0 || discount > 100)) {
+      notifyError("Please enter a valid discount percentage (0-100)");
+      return;
+    }
+
     const finalPrice = Math.ceil(price - (price * discount) / 100);
 
     setAddProductData((prev) => ({
@@ -97,10 +120,10 @@ const AddProduct = () => {
       variants: [
         ...prev.variants,
         {
-          memory: prev.memory,
-          storage: prev.storage,
+          memory: prev.memory || "", // Optional, default to empty string
+          storage: prev.storage || "", // Optional, default to empty string
           price: prev.price,
-          discount: prev.discount,
+          discount: prev.discount || "0", // Optional, default to "0"
           final_price: finalPrice,
         },
       ],
@@ -109,15 +132,24 @@ const AddProduct = () => {
       price: "",
       discount: "",
     }));
+
+    notifySuccess("Variant added successfully");
   };
 
-  const removeVariant = (index) => setAddProductData((prev) => ({
-    ...prev,
-    variants: prev.variants.filter((_, i) => i !== index),
-  }));
+  const removeVariant = (index) =>
+    setAddProductData((prev) => ({
+      ...prev,
+      variants: prev.variants.filter((_, i) => i !== index),
+    }));
 
   const saveProductData = async (e) => {
     e.preventDefault();
+
+    if (addProductData.variants.length === 0) {
+      notifyError("Please add at least one variant");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("brand_id", addProductData.brand_id);
     formData.append("cate_id", addProductData.cate_id);
@@ -238,12 +270,16 @@ const AddProduct = () => {
                   placeholder="Type product slogan here..."
                 />
                 <label>Description</label>
-                <textarea
-                  name="description"
-                  value={addProductData.description}
-                  onChange={handleChangeInput}
-                  placeholder="Type product description here..."
-                ></textarea>
+                <Editor
+                  apiKey="3mzdfu4cu13etf1urgx9fcutzw3kotb51cfhk5aywors01lv"
+                  init={{
+                    plugins:
+                      "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount",
+                    toolbar:
+                      "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat",
+                  }}
+                  onEditorChange={onEditorChange}
+                />
               </div>
             </div>
 
@@ -324,6 +360,7 @@ const AddProduct = () => {
                   type="button"
                   className="primary-btn"
                   onClick={handleAddVariant}
+                  disabled={!addProductData.price}
                 >
                   Save
                 </button>
@@ -350,13 +387,15 @@ const AddProduct = () => {
                   />
                 </div>
                 <div>
-                  <label>Price</label>
+                  <label>Price <span style={{ color: "red" }}>*</span></label>
                   <input
                     type="text"
                     name="price"
                     value={addProductData.price}
                     onChange={handleChangeInput}
                     placeholder="Price"
+                    min="0"
+                    required
                   />
                 </div>
                 <div>
@@ -367,6 +406,8 @@ const AddProduct = () => {
                     value={addProductData.discount}
                     onChange={handleChangeInput}
                     placeholder="Discount"
+                    min="0"
+                    max="100"
                   />
                 </div>
               </div>
@@ -387,10 +428,10 @@ const AddProduct = () => {
                     <tbody>
                       {addProductData.variants.map((v, index) => (
                         <tr key={index}>
-                          <td>{v.memory}</td>
-                          <td>{v.storage}</td>
+                          <td>{v.memory || "-"}</td>
+                          <td>{v.storage || "-"}</td>
                           <td>{v.price}</td>
-                          <td>{v.discount}</td>
+                          <td>{v.discount || "0"}</td>
                           <td>{v.final_price}</td>
                           <td className="inner-product-variants-remove">
                             <MdDeleteForever

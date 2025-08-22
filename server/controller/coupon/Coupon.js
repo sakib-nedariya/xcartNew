@@ -1,6 +1,5 @@
 const connection = require("../../connection/connection");
 
-
 const getCouponData = (req, res) => {
   const sql = "SELECT * FROM coupon ORDER BY id DESC";
   connection.query(sql, (error, result) => {
@@ -10,7 +9,6 @@ const getCouponData = (req, res) => {
     return res.json(result);
   });
 };
-
 
 const getCouponDataWithId = (req, res) => {
   const id = req.params.id;
@@ -30,8 +28,6 @@ const getCouponDataWithId = (req, res) => {
   });
 };
 
-
-
 const createCouponData = (req, res) => {
   try {
     const { coupon_code, discount_type, discount, max_price, min_price, start_date, expiry_date, status } = req.body;
@@ -42,8 +38,6 @@ const createCouponData = (req, res) => {
       if (error) {
         console.log("Error Adding coupon Data in server.js: ", error);
         return res.status(500).send("Error adding coupon data");
-
-
       } else {
         return res.sendStatus(200);
       }
@@ -75,7 +69,6 @@ const deleteCoupon = (req, res) => {
   }
 }
 
-
 const editCouponData = (req, res) => {
   try {
     const id = req.params.id;
@@ -98,7 +91,6 @@ const editCouponData = (req, res) => {
     return res.status(500).send("Internal server error");
   }
 };
-
 
 // Apply Coupon
 const applyCoupon = (req, res) => {

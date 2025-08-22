@@ -6,8 +6,7 @@ import default_profile from "../../../assets/image/default_profile.png";
 import Sidebar from "../layout/Sidebar";
 import Navbar from "../layout/Navbar";
 import axios from "axios";
-import { FaPencil } from "react-icons/fa6";
-import { MdDeleteForever } from "react-icons/md";
+import { Editor } from "@tinymce/tinymce-react";
 
 const port = import.meta.env.VITE_SERVER_URL;
 
@@ -134,7 +133,18 @@ const ViewProduct = () => {
                 <input type="text" value={productData.slogan} readOnly />
 
                 <label htmlFor="product-description">Description</label>
-                <textarea value={productData.description} readOnly />
+                <Editor
+                  apiKey="3mzdfu4cu13etf1urgx9fcutzw3kotb51cfhk5aywors01lv"
+                  value={productData.description}
+                  init={{
+                    menubar: false,
+                    toolbar: false,
+                    statusbar: false,
+                    readonly: true, 
+                    plugins:
+                      "anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount",
+                  }}
+                />
               </div>
             </div>
 

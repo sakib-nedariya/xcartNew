@@ -97,10 +97,10 @@ const WishList = () => {
                               ? `${product.memory} GB RAM`
                               : product.storage
                               ? `${product.storage} GB Storage`
-                              : "No Variant"}
+                              : "--"}
                           </span>
                         ) : (
-                          "No Variant"
+                          "--"
                         )}
                       </td>
                       <td>
